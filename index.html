@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>Haushalt Rheinland-Pfalz</title>
+
+    <link href="/stylesheets/normalize.css" rel="stylesheet" type="text/css" /><link href="/stylesheets/all.css" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/all.js" type="text/javascript"></script>
+  </head>
+
+  <body class="index" ng-app="demo">
+    <div ng-controller="DemoCtrl">
+  <babbage-workspace endpoint="http://52.23.213.247/api/babbage" cube="rp-test" state="state">
+  <filter filter="einahmenausgaben"></filter>
+  <div class="btn-group" dropdown ng-show="einahmenausgaben.length">
+    &mdash;
+    <a dropdown-toggle class="ng-link">{{state.cut[0]}}</a>
+    <ul class="dropdown-menu">
+      <li ng-repeat="attr in einahmenausgaben">
+        <a ng-click="changeEinahmenAusgaben(attr)">
+          <strong>{{attr.label}}</strong>
+        </a>
+      </li>
+    </ul>
+  </div>
+      <babbage-treemap drilldown="funktionbezeichnung.funktionbezeichnung" aggregates=regv2016.sum>
+      </babbage-treemap>
+  </babbage-workspace>
+</div>
+
+  </body>
+</html>
