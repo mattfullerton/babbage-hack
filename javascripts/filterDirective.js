@@ -3,11 +3,16 @@ demo.directive('filter', ['$rootScope', function($rootScope) {
     restrict: 'EA',
     require: '^babbage',
     scope: {
-      filter: '@'
+      state: '='
     },
     link: function(scope, element, attrs, babbageCtrl) {
-      //$rootScope.state.cut = ['test'];
       babbageCtrl.setState(scope.state);
+
+      scope.$watch('state', function(oldValue, newValue) {
+        if(oldValue !== newValue) {
+          babbageCtrl.update();
+        };
+      }, true);
     }
   }
 }]);

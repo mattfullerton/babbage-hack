@@ -65510,18 +65510,1618 @@ exports.version = '0.9.2';
 });
 //# sourceMappingURL=vega-lite.js.map
 ;
-/*! babbage.ui v0.1.7 */
-function asArray(a){return objs=a?a:[],angular.isArray(objs)?objs:[objs]}function randomKey(){return"X"+Math.random().toString(36).substring(7)}var ngBabbageGlobals=ngBabbageGlobals||{};ngBabbageGlobals.embedSite="http://assets.pudo.org/libs/babbage.ui/0.1.7",angular.module("ngBabbage.templates",["babbage-templates/babbage.html","babbage-templates/chart.html","babbage-templates/crosstab.html","babbage-templates/facts.html","babbage-templates/pager.html","babbage-templates/panel.html","babbage-templates/sankey.html","babbage-templates/treemap.html","babbage-templates/workspace.html"]),angular.module("babbage-templates/babbage.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/babbage.html",'<div class="babbage-frame" ng-transclude></div>')}]),angular.module("babbage-templates/chart.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/chart.html",'<div class="table-babbage" ng-hide="queryLoaded"><div class="alert alert-info"><strong>You have not selected any data.</strong> Please choose the configuration for your chart.</div></div><div class="alert alert-warning" ng-show="cutoffWarning"><strong>Too many categories.</strong> There are more than {{cutoff}} items in the selected drilldown.</div><div class="chart-babbage"><svg></svg></div>')}]),angular.module("babbage-templates/crosstab.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/crosstab.html",'<div class="table-babbage" ng-show="rows.length"><table class="table table-bordered table-condensed"><thead><tr ng-repeat="x in columns[0]"><th ng-repeat="r in rows[0]"></th><th ng-repeat="c in columns">{{c[$parent.$index]}}</th></tr></thead><tbody><tr ng-repeat="row in rows"><th ng-repeat="r in row">{{r}}</th><td ng-repeat="val in table[$index] track by $index" class="numeric">{{val | numeric}}</td></tr></tbody></table></div><div class="table-babbage" ng-hide="rows.length || !queryLoaded"><div class="alert alert-info"><strong>You have not selected any data.</strong> Please choose a set of rows and columns to generate a cross-table.</div></div>')}]),angular.module("babbage-templates/facts.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/facts.html",'<div class="table-babbage" ng-show="data"><table class="table table-bordered table-striped table-condensed"><thead><tr><th ng-repeat-start="c in columns" class="title">{{ c.header }} <span class="sublabel" ng-hide="c.hide">{{ c.label }}</span></th><th ng-repeat-end class="operations" ng-switch="getSort(c.ref).direction"><span ng-switch-when="desc" ng-click="pushSort(c.ref, \'asc\')" class="ng-link"><i class="fa fa-sort-desc"></i></span> <span ng-switch-when="asc" ng-click="pushSort(c.ref, \'desc\')" class="ng-link"><i class="fa fa-sort-asc"></i></span> <span ng-switch-default ng-click="pushSort(c.ref, \'desc\')" class="ng-link"><i class="fa fa-sort"></i></span></th></tr></thead><tbody><tr ng-repeat="row in data"><td ng-repeat="c in columns" ng-class="{\'numeric\': c.numeric}" class="simple" colspan="2"><span ng-if="c.numeric">{{ row[c.ref] | numeric }}</span> <span ng-if="!c.numeric">{{ row[c.ref] }}</span></td></tr></tbody></table></div><babbage-pager context="pagerCtx"></babbage-pager>')}]),angular.module("babbage-templates/pager.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/pager.html",'<ul ng-show="showPager" class="pagination pagination-sm"><li ng-class="{\'disabled\': !hasPrev}"><a class="ng-link" ng-click="setPage(current - 1)">&laquo;</a></li><li ng-repeat="page in pages" ng-class="{\'active\': page.current}"><a class="ng-link" ng-click="setPage(page.page)">{{page.page + 1}}</a></li><li ng-class="{\'disabled\': !hasNext}"><a class="ng-link" ng-click="setPage(current + 1)">&raquo;</a></li></ul>')}]),angular.module("babbage-templates/panel.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/panel.html",'<div class="panel panel-default" ng-repeat="axis in axes"><div class="panel-heading" ng-if="axis.label == \'Tiles\'"><strong>Anzeige nach:</strong><div class="btn-group" dropdown ng-show="axis.available.length">&nbsp;&nbsp; <a dropdown-toggle class="ng-link">&#x21d3;</a><ul class="dropdown-menu" role="menu"><li ng-repeat="opt in axis.available"><a ng-click="add(axis, opt.ref)" ng-if="[\'Einzelplanbezeichnung\', \'Hauptgruppenbezeichnung\', \'Hauptfunktionbezeichnung\'].indexOf(opt.subLabel) > -1"><strong ng-if="opt.subLabel == \'Einzelplanbezeichnung\'">Organisation</strong> <strong ng-if="opt.subLabel == \'Hauptgruppenbezeichnung\'">Gruppe</strong> <strong ng-if="opt.subLabel == \'Hauptfunktionbezeichnung\'">Funktion</strong></a></li></ul></div></div><table class="table" ng-if="axis.label == \'Tiles\'"><tr ng-repeat="opt in axis.active"><td colspan="2"><div class="pull-right"><a ng-click="remove(axis, opt.ref)" ng-show="axis.remove" class="ng-link ng-icon"><i class="fa fa-times"></i></a></div><strong ng-if="opt.subLabel == \'Einzelplanbezeichnung\'">Organisation</strong> <strong ng-if="opt.subLabel == \'Hauptgruppenbezeichnung\'">Gruppe</strong> <strong ng-if="opt.subLabel == \'Hauptfunktionbezeichnung\'">Funktion</strong></td></tr></table></div><div class="panel panel-default"><div class="panel-heading"><strong>Einnahmen oder Ausgaben</strong><div class="btn-group" dropdown ng-show="filterAttributes.length"></div></div><table class="table table-panel"><tbody ng-repeat="filter in filters"><tr><td colspan="2"></td><td width="1%"></td></tr><tr class="adjoined"><td width="0%" class="middle"></td><td width="95%"><ui-select ng-model="filter.value" disable-search="false" on-select="setFilter(filter, $item, $model)"><ui-select-match placeholder="Pick one...">{{$select.selected}}</ui-select-match><ui-select-choices repeat="v as v in filter.values | filter: $select.search track by $index"><div ng-bind="v"></div></ui-select-choices></ui-select></td><td class="middle"></td></tr></tbody></table></div>')}]),angular.module("babbage-templates/sankey.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/sankey.html",'<div class="table-babbage" ng-hide="queryLoaded"><div class="alert alert-info"><strong>You have not selected any data.</strong> Please choose a breakdown for both sides of the flow diagram.</div></div><div class="alert alert-warning" ng-show="cutoffWarning"><strong>Too many links.</strong> The source and target you have selected have many different links, only the {{cutoff}} biggest are shown.</div><div class="sankey-babbage"></div>')}]),angular.module("babbage-templates/treemap.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/treemap.html",'<div class="table-babbage" ng-hide="queryLoaded"><div class="alert alert-info"><strong>You have not selected any data.</strong> Please choose a breakdown for your treemap.</div></div><div class="alert alert-warning" ng-show="cutoffWarning"><strong>Too many tiles.</strong> The breakdown you have selected contains many different categories, only the {{cutoff}} biggest are shown.</div><div class="treemap-babbage"></div>')}]),angular.module("babbage-templates/workspace.html",[]).run(["$templateCache",function(a){a.put("babbage-templates/workspace.html",'<babbage endpoint="{{endpoint}}" cube="{{cube}}" state="state" update="update(state)"><div class="row"><div class="col-md-9"><div ng-if="view == \'crosstab\'"><babbage-crosstab></babbage-crosstab></div><div ng-if="view == \'facts\'"><babbage-facts></babbage-facts></div><div ng-if="view == \'treemap\'"><babbage-treemap></babbage-treemap></div><div ng-if="view == \'barchart\'"><babbage-chart chart-type="bar"></babbage-chart></div><div ng-if="view == \'linechart\'"><babbage-chart chart-type="line"></babbage-chart></div><div ng-if="view == \'sankey\'"><babbage-sankey></babbage-sankey></div></div><div class="col-md-3"><babbage-panel></babbage-panel></div></div></babbage>')}]);var ngBabbage=angular.module("ngBabbage",["ngBabbage.templates"]),ngBabbageGlobals=ngBabbageGlobals||{};if(ngBabbageGlobals.numberFormat=d3.format("0,000"),ngBabbageGlobals.categoryColors=["#CF3D1E","#F15623","#F68B1F","#FFC60B","#DFCE21","#BCD631","#95C93D","#48B85C","#00833D","#00B48D","#60C4B1","#27C4F4","#478DCB","#3E67B1","#4251A3","#59449B","#6E3F7C","#6A246D","#8A4873","#EB0080","#EF58A0","#C05A89"],ngBabbageGlobals.colorScale=d3.scale.ordinal().range(ngBabbageGlobals.categoryColors),!ngBabbageGlobals.embedSite){var url=window.location.href.split("#")[0],lastSlash=url.lastIndexOf("/"),lastSlash=-1==lastSlash?url.length:lastSlash;ngBabbageGlobals.embedSite=url.slice(0,lastSlash)}ngBabbageGlobals.embedLink=ngBabbageGlobals.embedSite+"/embed.html",ngBabbage.filter("numeric",function(){return function(a){var b=parseFloat(a);return isNaN(b)?"-":ngBabbageGlobals.numberFormat(Math.round(b))}}),ngBabbage.factory("babbageApi",["$http","$q","slugifyFilter",function(a,b,c){var d={},e=function(a,b,c){var d=a.slice(),d=d.endsWith("/")?d.slice(0,d.length-1):d,d=d+"/cubes/"+b+"/"+c;return d},f=function(b){return angular.isDefined(d[b])||(d[b]=a.get(b)),d[b]},g=function(a,b){return f(e(a,b,"model")).then(function(a){var b=a.data.model;b.refs={},b.refKeys={},b.refLabels={};for(var d in b.measures){var e=b.measures[d];e.numeric=!0,e.hideLabel=!0,b.refs[e.ref]=e}for(var d in b.aggregates){var f=b.aggregates[d];f.numeric=!0,f.hideLabel=!0,b.refs[f.ref]=f}for(var g in b.dimensions){var h=b.dimensions[g];for(var i in h.attributes){var j=h.attributes[i],k=-1!=j.ref.indexOf(".");j.dimension=h,j.hideLabel=c(j.label)==c(h.label),b.refs[j.ref]=j,b.refKeys[j.ref]=k?h.name+"."+h.key_attribute:j.ref,b.refLabels[j.ref]=k?h.name+"."+h.label_attribute:j.ref}}return b})},h=function(a,b,c){return f(e(a,b,"members/"+c))},i=function(){d={}};return{getUrl:e,getModel:g,getDimensionMembers:h,flush:i}}]),ngBabbage.directive("babbage",["$http","$rootScope","$location","babbageApi",function(a,b,c,d){return{restrict:"E",transclude:!0,scope:{endpoint:"@",cube:"@",state:"=",update:"&"},templateUrl:"babbage-templates/babbage.html",controller:["$scope",function(a){var b=this;b.queryModel=null,b.init=function(a){b.queryModel=a,b.update()},b.update=function(){b.queryModel&&d.getModel(a.endpoint,a.cube).then(function(b){a.$broadcast("babbageUpdate",b,a.state)})},b.subscribe=function(b){return a.$on("babbageUpdate",b)},b.getState=function(){return a.state},b.isEmbedded=function(){return"true"==a.state.embed},b.setState=function(c){a.state=c,b.update(),a.update(c)},b.getApiUrl=function(b){return d.getUrl(a.endpoint,a.cube,b)},b.getDimensionMembers=function(b){return d.getDimensionMembers(a.endpoint,a.cube,b)},b.size=function(a,c){return b.isEmbedded()?{width:document.documentElement.clientWidth,height:document.documentElement.clientHeight}:{width:a.clientWidth,height:c(a.clientWidth,a.clientHeight)}},b.getSorts=function(){var b=[],c=a.state.order||"",c=asArray(c.split(","));for(var d in c){var e=c[d].split(":"),f={};f.ref=e[0],f.direction=e[1]||null,f.ref.length&&b.push(f)}return b},b.getSort=function(a){var c=b.getSorts();for(var d in c)if(c[d].ref==a)return c[d];return{ref:a}},b.pushSort=function(c,d){var e=b.getSorts().filter(function(a){return a.ref!=c});e.unshift({ref:c,direction:d}),a.state.order=b.mergeSorts(e),b.setState(a.state)},b.removeSorts=function(a){var c=b.getSorts().filter(function(b){return b.ref!=a});return b.mergeSorts(c)},b.mergeSorts=function(a){var b=[];a=asArray(a);for(var c in a){var d=a[c];angular.isObject(d)&&d.ref.length&&(d.direction=d.direction||"asc",d=d.ref+":"+d.direction,b.push(d))}return b.join(",")},b.getQuery=function(){var c={drilldown:[],aggregates:[],cut:a.state.cut||[],page:a.state.page||0,pagesize:a.state.pagesize||30,order:b.getSorts()};return c},b.queryParams=function(a){a.order=b.mergeSorts(a.order);for(var c in a)angular.isArray(a[c])&&(-1!=["order","fields"].indexOf(c)?a[c]=a[c].join(","):a[c]=a[c].join("|")),a[c]=a[c]+"",a[c].length||delete a[c];return{params:a}}}]}}]),ngBabbage.directive("babbageChart",["$rootScope","$http",function(a,b){return{restrict:"EA",require:"^babbage",scope:{chartType:"@"},templateUrl:"babbage-templates/chart.html",link:function(a,c,d,e){a.queryLoaded=!1,a.cutoffWarning=!1,a.cutoff=0;var f=function(a){var b={};for(var c in a.refs){var d=a.refs[c];b[c]=d.label||d.name||c}return b},g=function(a,b,c,d){var e=[[b]],f={category:0};for(var g in a){var h=a[g],i=c?h[c]:d;f[i]||(f[i]=e.push([i])-1),e[0].indexOf(h[b])<1&&e[0].push(h[b]);var j=e[0].indexOf(h[b]);e[f[i]][j]=h[d]}for(var k=Math.max.apply(null,e.map(function(a){return a.length})),g=1;k>g;g++)for(var l in e)e[l][g]=e[l][g]||0;return e},h=function(a,c){var d=asArray(c.category)[0],f=asArray(c.grouping)[0],g=asArray(c.value)[0];if(g&&d){var h=e.getQuery();h.aggregates=[g],h.drilldown=[d],f&&h.drilldown.push(f);var j=[];for(var k in h.order){var l=h.order[k];-1!=[g,d].indexOf(l.ref)&&j.push(l)}j.length||(j=[{ref:g,direction:"desc"}]),f&&j[0]&&j[0].ref!=f&&j.unshift({ref:f,direction:"asc"}),h.order=j,h.page=0,h.pagesize=1e4;var m=b.get(e.getApiUrl("aggregate"),e.queryParams(h));m.then(function(b){i(b.data,h,a,c,d,f,g)})}},i=function(b,d,h,i,j,k,l){var m=c.querySelectorAll(".chart-babbage")[0],n=e.size(m,function(a){return.6*a}),o=ngBabbageGlobals.colorScale.copy(),p=g(b.cells,j,k,l),q=f(h),r=[],s={},t=a.chartType;k&&"line"==t&&(t="area");for(var u in p)u>0&&(k?(key=randomKey(),q[key]=p[u][0],p[u][0]=key,r.push(key)):r.push(p[u][0]),s[p[u][0]]=t);d3.select(m).style("width",n.width+"px").style("height",n.height+"px");c3.generate({bindto:m,data:{columns:p,names:q,color:function(a,b){var c=b.id||b;return"bar"!=t||k||(c=b.index),o(c)},order:null,x:j,groups:[r],types:s},point:{show:!1},grid:{focus:{show:!1}},axis:{x:{type:"category",tick:{culling:!0,fit:!0}},y:{tick:{format:ngBabbageGlobals.numberFormat,culling:!0,fit:!0},lines:[{value:0}]}}});a.queryLoaded=!0,a.cutoffWarning=b.total_cell_count>d.pagesize,a.cutoff=d.pagesize},j=e.subscribe(function(a,b,c){h(b,c)});a.$on("$destroy",j);var k={value:{label:"Value",addLabel:"set height",types:["aggregates"],defaults:[],sortId:1,multiple:!1},grouping:{label:"Grouping (opt)",addLabel:"select",types:["attributes"],defaults:[],sortId:2,remove:!0,multiple:!1}};"line"==a.chartType&&(k.category={label:"Series",addLabel:"set series",types:["attributes"],defaults:[],sortId:0,multiple:!1}),"bar"==a.chartType&&(k.category={label:"Categories",addLabel:"set bars",types:["attributes"],defaults:[],sortId:0,multiple:!1}),e.init(k)}}}]);var VAL_KEY="@@@@",POS_KEY="!@!@";ngBabbage.directive("babbageCrosstab",["$rootScope","$http",function(a,b){return{restrict:"EA",require:"^babbage",scope:{drilldown:"="},templateUrl:"babbage-templates/crosstab.html",link:function(a,c,d,e){a.queryLoaded=!1,a.columns=[],a.rows=[],a.table=[];var f=function(a,c){c.rows=asArray(c.rows),c.columns=asArray(c.columns),c.aggregates=asArray(c.aggregates);var d=e.getQuery();d.aggregates=d.aggregates.concat(c.aggregates),d.aggregates.length||(d.aggregates=i(a)),d.drilldown=d.drilldown.concat(c.rows),d.drilldown=d.drilldown.concat(c.columns),d.page=0,d.pagesize=1e4*d.pagesize,d.order=asArray(d.order);var f=c.rows.concat(c.columns),h=f.concat(d.aggregates);for(var j in f){var k=f[j];e.getSort(k).direction||-1==d.order.indexOf(k)&&d.order.push({ref:k})}var l=[];for(var j in d.order){var m=d.order[j];-1!=h.indexOf(m.ref)&&l.push(m)}d.order=l;var n=b.get(e.getApiUrl("aggregate"),e.queryParams(d));n.then(function(b){g(b.data,d,a,c)})},g=function(b,c,d,e){e.rows=asArray(e.rows),e.columns=asArray(e.columns);var f=b.aggregates.map(function(a){return d.aggregates[a]}),g={},h=[],i=[],j=[],k=[],l=[];for(var m in b.cells){var n=function(a){return p[a]},o=function(a){return p[d.refKeys[a]]+p[a]},p=b.cells[m],q=e.rows.map(n),r=e.rows.map(o).join(VAL_KEY),s=e.columns.map(n),t=e.columns.map(o);for(var u in f){var v=f[u],w=v.label||v.name,x=s.concat([w]);column_set=t.concat([w]).join(VAL_KEY),-1==k.indexOf(r)&&(k.push(r),q.key=r,i.push(q)),-1==l.indexOf(column_set)&&(l.push(column_set),j.push(x));var y=[r,column_set].join(POS_KEY);g[y]=p[v.ref]}}for(var m in k){var z=k[m],A=[];for(var B in l){var C=l[B],y=[z,C].join(POS_KEY);A.push(g[y]||b.aggregates.map(function(a){}))}h.push(A)}a.rows=i,a.columns=j,a.table=h,a.queryLoaded=!0},h=e.subscribe(function(a,b,c){f(b,c)});a.$on("$destroy",h);var i=function(a){var b=[];for(var c in a.aggregates){var d=a.aggregates[c];b.push(d.ref)}return b};e.init({columns:{label:"Columns",addLabel:"add column",types:["attributes"],defaults:[],sortId:0,multiple:!0},rows:{label:"Rows",addLabel:"add row",types:["attributes"],defaults:[],sortId:1,multiple:!0},aggregates:{label:"Values",addLabel:"add value",types:["aggregates"],defaults:i,sortId:2,multiple:!0}})}}}]),ngBabbage.directive("babbageFacts",["$rootScope","$http","$q",function(a,b,c){return{restrict:"EA",require:"^babbage",scope:{drilldown:"="},templateUrl:"babbage-templates/facts.html",link:function(a,c,d,e){a.page=0,a.data=[],a.columns=[],a.pagerCtx={},a.getSort=e.getSort,a.pushSort=e.pushSort;var f=function(a,c){var d=e.getQuery();d.fields=asArray(c.fields),0==d.fields.length&&(d.fields=h(a));var f=[];for(var i in d.order){var j=d.order[i];-1!=d.fields.indexOf(j.ref)&&f.push(j)}d.order=f;var k=angular.copy(d);k.drilldown=k.fields=[],k.page=0;var l=b.get(e.getApiUrl("facts"),e.queryParams(d));l.then(function(b){g(b.data,d,c,a)})},g=function(b,c,d,e){if(!b.data.length)return a.columns=[],a.data=[],void(a.pagerCtx={});var f=[],g=null,h=0;for(var i in b.fields){var j=b.fields[i],k=e.refs[j],l=k.dimension?k.dimension:k;g&&l.name==g?(f[h].span+=1,k.span=0):(k.span=1,k.label=k.label||k.name,k.header=l.label||l.name,k.hide=k.hideLabel,g=l.name,h=f.length),f.push(k)}a.columns=f,a.data=b.data,a.pagerCtx={page:c.page,pagesize:c.pagesize,total:b.total_fact_count}},h=function(a){var b=[];for(var c in a.measures){var d=a.measures[c];b.push(d.ref)}for(var c in a.dimensions){var e=a.dimensions[c];for(var f in e.attributes){var g=e.attributes[f];f==e.label_attribute&&b.push(g.ref)}}return b},i=e.subscribe(function(a,b,c){f(b,c)});a.$on("$destroy",i),e.init({fields:{label:"Columns",addLabel:"add column",types:["attributes","measures"],defaults:h,sortId:0,multiple:!0}})}}}]),ngBabbage.directive("babbagePager",["$timeout","$location",function(a,b){return{restrict:"E",require:"^babbage",scope:{context:"="},templateUrl:"babbage-templates/pager.html",link:function(a,b,c,d){a.showPager=!1,a.hasPrev=!1,a.hasNext=!1,a.pages=[],a.cur=0,a.num=0,a.$watch("context",function(b){if(a.context&&!(a.context.total<=a.context.pagesize)){a.current=parseInt(a.context.page,10)||0,a.num=Math.ceil(a.context.total/a.context.pagesize);var c=[],d=a.num,e=3,f=a.current-e,g=a.current+e;0>f&&(f=0,g=Math.min(2*e+1,d)),g>d&&(g=d,f=Math.max(1,d-2*e+1));for(var h=f;g>=h;h++)c.push({page:h,current:h==a.current});a.hasPrev=a.current>0,a.hasNext=a.current<d,a.showPager=d>1,a.pages=c}}),a.setPage=function(b){if(b>=0&&b<=a.num){var c=d.getState();c.page=b,d.setState(c)}}}}}]),ngBabbage.directive("babbagePanel",["$rootScope","slugifyFilter",function(a,b){return{restrict:"EA",require:"^babbage",scope:{},templateUrl:"babbage-templates/panel.html",link:function(a,c,d,e){var f=null;a.state={},a.axes=[],a.filterAttributes=[],a.filters=[],a.getSort=e.getSort,a.pushSort=e.pushSort,a.embedLink=null;var g=function(){e.setState(a.state)};a.add=function(b,c){-1==b.selected.indexOf(c)&&(b.multiple?b.selected.push(c):(b.selected.length&&(a.state.order=e.removeSorts(b.selected[0])),b.selected=[c]),a.state[b.name]=b.selected,g())},a.remove=function(b,c){var d=b.selected.indexOf(c);-1!=d&&(b.selected.splice(d,1),a.state[b.name]=b.selected,a.state.order=e.removeSorts(c),a.state.cut="einnahmeausgabe.einnahmeausgabe:Ausgabe",g())};var h=function(){var a=[];for(var c in f.dimensions){var d=f.dimensions[c];for(var e in d.attributes){var g=angular.copy(d.attributes[e]);g.dimension=d,g.type="attributes",b(d.label)!=b(g.label)&&(g.subLabel=""+g.label),g.sortKey="0"+d.label+g.label,g.label=d.label,a.push(g)}}for(var e in f.aggregates){var h=f.aggregates[e];h.type="aggregates",h.sortKey="1"+e,a.push(h)}for(var i in f.measures){var j=f.measures[i];j.type="measures",j.sortKey="2"+i,a.push(j)}return a},i=function(a,b){return a.label.localeCompare(b.label)},j=function(a,b){var c=[];if(!e.queryModel)return[];for(var d in e.queryModel){var g=e.queryModel[d];g.name=d,angular.isDefined(g.remove)||(g.remove=g.multiple),g.sortId=g.sortId||1,g.available=[],g.active=[],g.selected=asArray(a[d]),g.selected.length||(angular.isFunction(g.defaults)?g.selected=g.defaults(f):g.selected=asArray(g.defaults)),g.available=g.available.sort(i),g.active=g.active.sort(i);for(var h in b){var j=b[h];-1!=g.selected.indexOf(j.ref)?g.active.push(j):-1!=g.types.indexOf(j.type)&&g.available.push(j)}c.push(g)}return c.sort(function(a,b){return a.sortId-b.sortId})},k=function(a){var b=[];for(var c in a){var d=a[c];"attributes"==d.type&&"high"!=d.dimension.cardinality_class&&d.dimension.label_ref==d.ref&&b.push(d)}return b.sort(i)},l=function(b){console.log(a.filterAttributes);for(var c in a.filterAttributes){var d=a.filterAttributes[c];if(d.ref==b)return d}},m=function(b){var c=asArray(b.cut);for(var d in c){var e=c[d];if(-1!=e.indexOf(":")){var f=e.split(":",1)[0],g=e.slice(f.length+1).split(";");console.log("ref is "+f),console.log("vals are "+g);for(var h in g)a.addFilter(l(f),g[h])}}};a.addFilter=function(b,c){e.getDimensionMembers(b.ref).then(function(d){a.filters.push({ref:b.ref,attr:b,value:c,values:d.data.data.map(function(a){return a[b.ref]})})})},a.removeFilter=function(b){var c=a.filters.indexOf(b);-1!=c&&(a.filters.splice(c,1),a.updateFilters())},a.setFilter=function(b,c,d){a.updateFilters()},a.updateFilters=function(){var b={};for(var c in a.filters){var d=a.filters[c];angular.isUndefined(b[d.ref])&&(b[d.ref]=[]),b[d.ref].push(d.value)}var e=[];for(var f in b){var h=b[f],i=h.join(";");cut=f+":"+i,e.push(cut)}a.state.cut=e,g()};var n=e.subscribe(function(b,c,d){f=c;var e="einnahmeausgabe.einnahmeausgabe:Ausgabe";if("object"==typeof d.cut){for(var g=!0,i=0;i<d.cut.length;i++)d.cut[i].indexOf("einnahmeausgabe")>-1&&(g=!1);g&&d.cut.push(e)}else if("string"==typeof d.cut){if(-1==d.cut.indexOf("einnahmeausgabe")){var l=new Array;l.push(d.cut),l.push(e),d.cut=l}}else d.cut=e;a.state=d;var n=h();a.axes=j(d,n),a.filterAttributes=k(n),a.filters=[],m(d)});a.$on("$destroy",n)}}}]),ngBabbage.directive("babbageSankey",["$rootScope","$http","$document",function(a,b,c){return{restrict:"EA",require:"^babbage",scope:{drilldown:"="},templateUrl:"babbage-templates/sankey.html",link:function(a,c,d,e){var f=15,g={top:f/2,right:1,bottom:6,left:1},h=null,i=null;a.queryLoaded=!1,a.cutoffWarning=!1,a.cutoff=0;var j=function(d,j){var l=asArray(j.source)[0],n=asArray(j.target)[0];aggregate=asArray(j.aggregate)[0],aggregate=aggregate?[aggregate]:m(d);var o=e.getQuery();if(o.aggregates=aggregate,l&&n){o.drilldown=[l,n],o.order=[{ref:aggregate,direction:"desc"},{ref:l,direction:"asc"},{ref:n,direction:"asc"}],o.page=0,o.pagesize=2e3,a.queryLoaded=!0,a.cutoffWarning=!1;var p=b.get(e.getApiUrl("aggregate"),e.queryParams(o)),q=c.querySelectorAll(".sankey-babbage")[0],r=e.size(q,function(a){return.6*a});f=Math.max(400,r.height)/20,h||(h=d3.select(q).append("svg"),i=h.append("g").attr("transform","translate("+g.left+","+g.top+")")),p.then(function(a){k(r,a.data,o,d,j)})}},k=function(b,c,d,e,j){var k=asArray(j.source)[0],l=asArray(j.target)[0];aggregateRef=asArray(j.aggregate)[0],aggregateRef=aggregateRef?[aggregateRef]:m(e),b.height=c.cells.length*f,h.attr("height",b.height+g.top+g.bottom),h.attr("width",b.width);var n={nodes:[],links:[]},o={},p=ngBabbageGlobals.colorScale.copy(),q=d3.scale.ordinal().range(["#ddd","#ccc","#eee","#bbb"]);c.cells.forEach(function(a){var b=a[k],c=a[l],d={value:a[aggregateRef],number:ngBabbageGlobals.numberFormat(a[aggregateRef])};if(0!=d.value&&b&&c){if(b="source-"+k+b,c="target-"+l+c,!o[b]){var f=a[e.refLabels[k]];n.nodes.push({name:f,color:p(b)}),o[b]={idx:n.nodes.length-1}}if(d.source=o[b].idx,!o[c]){var f=a[e.refLabels[l]];n.nodes.push({name:f,color:q(c)}),o[c]={idx:n.nodes.length-1}}d.target=o[c].idx,n.links.push(d)}});var r=d3.sankey().nodeWidth(f).nodePadding(.6*f).size([b.width,b.height]),s=r.link();r.nodes(n.nodes).links(n.links).layout(32),i.selectAll("g").remove();var t=i.append("g").selectAll(".link").data(n.links).enter().append("path").attr("class","link").attr("d",s).style("stroke-width",function(a){return Math.max(1,a.dy)}).style("stroke",function(a){return a.source.color}).sort(function(a,b){return b.dy-a.dy});t.append("title").text(function(a){return a.source.name+" → "+a.target.name+"\n"+a.number});var u=i.append("g").selectAll(".node").data(n.nodes).enter().append("g").attr("class","node").attr("transform",function(a){return"translate("+a.x+","+a.y+")"});u.append("rect").attr("height",function(a){return a.dy}).attr("width",r.nodeWidth()).style("fill",function(a){return a.color}).style("stroke",function(a){return a.color}).append("title").text(function(a){return a.name}),u.append("text").attr("x",-6).attr("y",function(a){return a.dy/2}).attr("dy",".35em").attr("text-anchor","end").attr("transform",null).text(function(a){return a.name}).filter(function(a){return a.x<b.width/2}).attr("x",6+r.nodeWidth()).attr("text-anchor","start"),a.cutoffWarning=c.total_cell_count>d.pagesize,a.cutoff=d.pagesize},l=e.subscribe(function(a,b,c){j(b,c)});a.$on("$destroy",l);var m=function(a){for(var b in a.aggregates){var c=a.aggregates[b];if(c.measure)return[c.ref]}return[]};e.init({source:{label:"Source",addLabel:"set left side",types:["attributes"],defaults:[],sortId:0,multiple:!1},target:{label:"Target",addLabel:"set right side",types:["attributes"],defaults:[],sortId:1,multiple:!1},aggregate:{label:"Width",addLabel:"set width",types:["aggregates"],defaults:m,sortId:2,multiple:!1}})}}}]),ngBabbage.directive("babbageTreemap",["$rootScope","$http","$document",function(a,b,c){return{restrict:"EA",require:"^babbage",scope:{drilldown:"="},templateUrl:"babbage-templates/treemap.html",link:function(a,c,d,e){function f(){this.style("left",function(a){return a.x+"px"}).style("top",function(a){return a.y+"px"}).style("width",function(a){return Math.max(0,a.dx-1)+"px"}).style("height",function(a){return Math.max(0,a.dy-1)+"px"})}var g=null,h=null;a.queryLoaded=!1,a.cutoffWarning=!1;var i=function(d,f){var i=asArray(f.tile)[0],k=asArray(f.area)[0],k=k?[k]:l(d),m=e.getQuery();if(m.aggregates=k,i){m.drilldown=[i];var n=[];for(var o in m.order){var p=m.order[o];-1!=[i,k].indexOf(p.ref)&&n.push(p)}n.length||(n=[{ref:k,direction:"desc"}]),m.order=n,m.page=0,m.pagesize=50,a.cutoffWarning=!1,a.queryLoaded=!0;var q=b.get(e.getApiUrl("aggregate"),e.queryParams(m)),r=c.querySelectorAll(".treemap-babbage")[0],s=e.size(r,function(a){return.6*a});g=d3.layout.treemap().size([s.width,s.height]).sticky(!0).sort(function(a,b){return a[k]-b[k]}).value(function(a){return a[k]}),d3.select(r).select("div").remove(),h=d3.select(r).append("div").style("position","relative").style("width",s.width+"px").style("height",s.height+"px"),q.then(function(a){j(a.data,m,d,f)})}},j=function(b,c,d,e){console.log(e);var j=c.drilldown&&c.drilldown.split(".");j&&j.length>0&&(j=j[0]);var k=void 0;switch(j){case"einzelplan":k="kapitel.kapitelbezeichnung";break;case"kapitel":k="zweckbestimmung.zweckbestimmung";break;case"hauptgruppe":k="obergruppe.obergruppenbezeichnung";break;case"obergruppe":k="gruppe.gruppenbezeichnung";break;case"hauptfunktion":k="oberfunktion.oberfunktionbezeichnung";break;case"oberfunktion":k="funktion.funktionbezeichnung"}var m=asArray(e.tile)[0],n=asArray(e.area)[0],n=n?[n]:l(d),o={children:[]};for(var p in b.cells){var q=b.cells[p];q._area_fmt=ngBabbageGlobals.numberFormat(Math.round(q[n])),q._name=q[m],q._color=ngBabbageGlobals.colorScale(p),q._percentage=q[n]/Math.max(b.summary[n],1),o.children.push(q)}h.datum(o).selectAll(".node").data(g.nodes).enter().append("a").attr("href",function(a){return a.href}).attr("class","node").call(f).style("background","#fff").html(function(a){return a._percentage<.02?"":a.children?null:'<span class="amount">'+a._area_fmt+"</span>"+a._name}).on("mouseover",function(a){d3.select(this).transition().duration(200).style({background:d3.rgb(a._color).darker()})}).on("mouseout",function(a){d3.select(this).transition().duration(500).style({background:a._color})}).on("click",function(a){if("object"==typeof e.cut)e.cut.push(e.tile+":"+a[e.tile]);else if("string"==typeof e.cut){var b=new Array;b.push(e.cut),b.push(e.tile+":"+a[e.tile]),e.cut=b}e.tile=k,i(d,e)}).transition().duration(500).delay(function(a,b){return Math.min(30*b,1500)}).style("background",function(a){return a._color});a.cutoffWarning=b.total_cell_count>c.pagesize,a.cutoff=c.pagesize},k=e.subscribe(function(a,b,c){i(b,c)});a.$on("$destroy",k);var l=function(a){for(var b in a.aggregates){var c=a.aggregates[b];if(c.measure)return[c.ref]}return[]};e.init({tile:{label:"Tiles",addLabel:"set breakdown",types:["attributes"],defaults:[],sortId:0,multiple:!1},area:{label:"Area",addLabel:"set area",types:["aggregates"],defaults:l,sortId:1,multiple:!1}})}}}]),String.prototype.endsWith||(String.prototype.endsWith=function(a,b){var c=this.toString();(void 0===b||b>c.length)&&(b=c.length),b-=a.length;var d=c.indexOf(a,b);return-1!==d&&d===b}),ngBabbage.directive("babbageWorkspace",["$location",function(a){return{restrict:"EA",scope:{endpoint:"@",cube:"@"},templateUrl:"babbage-templates/workspace.html",link:function(b,c,d){b.state=null,b.embedLink=null,b.setView=function(a){b.view=a,b.state.view=a,b.update(b.state)},b.update=function(c){b.state=c,b.view=b.state.view||"facts",a.search(c),e()};var e=function(){var c=[],d=angular.extend({},a.search(),{view:b.view,endpoint:b.endpoint,cube:b.cube,embed:!0});for(var e in d){var f=asArray(d[e]);for(var g in f){var h=encodeURIComponent(f[g]);c.push(e+"="+h)}}b.embedLink=ngBabbageGlobals.embedLink+"#/?"+c.join("&")};b.update(a.search())}}}]);
+var ngBabbageGlobals = ngBabbageGlobals || {}; ngBabbageGlobals.embedSite = "http://assets.pudo.org/libs/babbage.ui/0.1.7";angular.module('ngBabbage.templates', ['babbage-templates/babbage.html', 'babbage-templates/chart.html', 'babbage-templates/crosstab.html', 'babbage-templates/facts.html', 'babbage-templates/pager.html', 'babbage-templates/panel.html', 'babbage-templates/sankey.html', 'babbage-templates/treemap.html', 'babbage-templates/workspace.html']);
+
+angular.module("babbage-templates/babbage.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/babbage.html",
+    "<div class=\"babbage-frame\" ng-transclude></div>");
+}]);
+
+angular.module("babbage-templates/chart.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/chart.html",
+    "<div class=\"table-babbage\" ng-hide=\"queryLoaded\"><div class=\"alert alert-info\"><strong>You have not selected any data.</strong> Please choose the configuration for your chart.</div></div><div class=\"alert alert-warning\" ng-show=\"cutoffWarning\"><strong>Too many categories.</strong> There are more than {{cutoff}} items in the selected drilldown.</div><div class=\"chart-babbage\"><svg></svg></div>");
+}]);
+
+angular.module("babbage-templates/crosstab.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/crosstab.html",
+    "<div class=\"table-babbage\" ng-show=\"rows.length\"><table class=\"table table-bordered table-condensed\"><thead><tr ng-repeat=\"x in columns[0]\"><th ng-repeat=\"r in rows[0]\"></th><th ng-repeat=\"c in columns\">{{c[$parent.$index]}}</th></tr></thead><tbody><tr ng-repeat=\"row in rows\"><th ng-repeat=\"r in row\">{{r}}</th><td ng-repeat=\"val in table[$index] track by $index\" class=\"numeric\">{{val | numeric}}</td></tr></tbody></table></div><div class=\"table-babbage\" ng-hide=\"rows.length || !queryLoaded\"><div class=\"alert alert-info\"><strong>You have not selected any data.</strong> Please choose a set of rows and columns to generate a cross-table.</div></div>");
+}]);
+
+angular.module("babbage-templates/facts.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/facts.html",
+    "<div class=\"table-babbage\" ng-show=\"data\"><table class=\"table table-bordered table-striped table-condensed\"><thead><tr><th ng-repeat-start=\"c in columns\" class=\"title\">{{ c.header }} <span class=\"sublabel\" ng-hide=\"c.hide\">{{ c.label }}</span></th><th ng-repeat-end class=\"operations\" ng-switch=\"getSort(c.ref).direction\"><span ng-switch-when=\"desc\" ng-click=\"pushSort(c.ref, 'asc')\" class=\"ng-link\"><i class=\"fa fa-sort-desc\"></i></span> <span ng-switch-when=\"asc\" ng-click=\"pushSort(c.ref, 'desc')\" class=\"ng-link\"><i class=\"fa fa-sort-asc\"></i></span> <span ng-switch-default ng-click=\"pushSort(c.ref, 'desc')\" class=\"ng-link\"><i class=\"fa fa-sort\"></i></span></th></tr></thead><tbody><tr ng-repeat=\"row in data\"><td ng-repeat=\"c in columns\" ng-class=\"{'numeric': c.numeric}\" class=\"simple\" colspan=\"2\"><span ng-if=\"c.numeric\">{{ row[c.ref] | numeric }}</span> <span ng-if=\"!c.numeric\">{{ row[c.ref] }}</span></td></tr></tbody></table></div><babbage-pager context=\"pagerCtx\"></babbage-pager>");
+}]);
+
+angular.module("babbage-templates/pager.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/pager.html",
+    "<ul ng-show=\"showPager\" class=\"pagination pagination-sm\"><li ng-class=\"{'disabled': !hasPrev}\"><a class=\"ng-link\" ng-click=\"setPage(current - 1)\">&laquo;</a></li><li ng-repeat=\"page in pages\" ng-class=\"{'active': page.current}\"><a class=\"ng-link\" ng-click=\"setPage(page.page)\">{{page.page + 1}}</a></li><li ng-class=\"{'disabled': !hasNext}\"><a class=\"ng-link\" ng-click=\"setPage(current + 1)\">&raquo;</a></li></ul>");
+}]);
+
+angular.module("babbage-templates/panel.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/panel.html",
+    "<div class=\"panel panel-default\" ng-repeat=\"axis in axes\"><div class=\"panel-heading\"><strong>{{axis.label}}</strong><div class=\"btn-group\" dropdown ng-show=\"axis.available.length\">&mdash; <a dropdown-toggle class=\"ng-link\">{{axis.addLabel}}</a><ul class=\"dropdown-menu\" role=\"menu\"><li ng-repeat=\"opt in axis.available\"><a ng-click=\"add(axis, opt.ref)\"><strong>{{opt.label}}</strong> {{opt.subLabel}}</a></li></ul></div></div><table class=\"table\"><tr ng-repeat=\"opt in axis.active\"><td colspan=\"2\"><div class=\"pull-right\"><span ng-switch=\"getSort(opt.ref).direction\"><a ng-switch-when=\"desc\" ng-click=\"pushSort(opt.ref, 'asc')\" class=\"ng-link ng-icon\"><i class=\"fa fa-sort-amount-desc\"></i></a> <a ng-switch-when=\"asc\" ng-click=\"pushSort(opt.ref, 'desc')\" class=\"ng-link ng-icon\"><i class=\"fa fa-sort-amount-asc\"></i></a> <a ng-switch-default ng-click=\"pushSort(opt.ref, 'desc')\" class=\"ng-link ng-icon\"><i class=\"fa fa-sort-amount-desc\"></i></a></span> <a ng-click=\"remove(axis, opt.ref)\" ng-show=\"axis.remove\" class=\"ng-link ng-icon\"><i class=\"fa fa-times\"></i></a></div><strong>{{opt.label}}</strong> {{opt.subLabel}}</td></tr></table></div><div class=\"panel panel-default\"><div class=\"panel-heading\"><strong>Filters</strong><div class=\"btn-group\" dropdown ng-show=\"filterAttributes.length\">&mdash; <a dropdown-toggle class=\"ng-link\">add filter</a><ul class=\"dropdown-menu\" role=\"menu\"><li ng-repeat=\"attr in filterAttributes\"><a ng-click=\"addFilter(attr)\"><strong>{{attr.label}}</strong> {{attr.subLabel}}</a></li></ul></div></div><table class=\"table table-panel\"><tbody ng-repeat=\"filter in filters\"><tr><td colspan=\"2\"><strong>{{filter.attr.label}}</strong> {{filter.attr.subLabel}}</td><td width=\"1%\"><span class=\"pull-right\"><a ng-click=\"removeFilter(filter)\" class=\"ng-link\"><i class=\"fa fa-times\"></i></a></span></td></tr><tr class=\"adjoined\"><td width=\"1%\" class=\"middle\">is</td><td width=\"95%\"><ui-select ng-model=\"filter.value\" disable-search=\"false\" on-select=\"setFilter(filter, $item, $model)\"><ui-select-match placeholder=\"Pick one...\">{{$select.selected}}</ui-select-match><ui-select-choices repeat=\"v as v in filter.values | filter: $select.search track by $index\"><div ng-bind=\"v\"></div></ui-select-choices></ui-select></td><td class=\"middle\"></td></tr></tbody></table></div>");
+}]);
+
+angular.module("babbage-templates/sankey.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/sankey.html",
+    "<div class=\"table-babbage\" ng-hide=\"queryLoaded\"><div class=\"alert alert-info\"><strong>You have not selected any data.</strong> Please choose a breakdown for both sides of the flow diagram.</div></div><div class=\"alert alert-warning\" ng-show=\"cutoffWarning\"><strong>Too many links.</strong> The source and target you have selected have many different links, only the {{cutoff}} biggest are shown.</div><div class=\"sankey-babbage\"></div>");
+}]);
+
+angular.module("babbage-templates/treemap.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/treemap.html",
+    "<div class=\"table-babbage\" ng-hide=\"queryLoaded\"><div class=\"alert alert-info\"><strong>You have not selected any data.</strong> Please choose a breakdown for your treemap.</div></div><div class=\"alert alert-warning\" ng-show=\"cutoffWarning\"><strong>Too many tiles.</strong> The breakdown you have selected contains many different categories, only the {{cutoff}} biggest are shown.</div><div class=\"treemap-babbage\"></div>");
+}]);
+
+angular.module("babbage-templates/workspace.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("babbage-templates/workspace.html",
+    "<babbage endpoint=\"{{endpoint}}\" cube=\"{{cube}}\" state=\"state\" update=\"update(state)\"><div class=\"row\"><div class=\"col-md-12\"><div class=\"pull-right\"><div class=\"btn-group spaced\" role=\"group\"><a class=\"btn btn-default\" ng-class=\"{'active': view == 'facts'}\" ng-click=\"setView('facts')\"><i class=\"fa fa-table\"></i> Items</a> <a class=\"btn btn-default\" ng-class=\"{'active': view == 'crosstab'}\" ng-click=\"setView('crosstab')\"><i class=\"fa fa-cubes\"></i> Pivot table</a> <a class=\"btn btn-default\" ng-class=\"{'active': view == 'barchart'}\" ng-click=\"setView('barchart')\"><i class=\"fa fa-bar-chart\"></i> Bar chart</a> <a class=\"btn btn-default\" ng-class=\"{'active': view == 'linechart'}\" ng-click=\"setView('linechart')\"><i class=\"fa fa-line-chart\"></i> Line chart</a> <a class=\"btn btn-default\" ng-class=\"{'active': view == 'treemap'}\" ng-click=\"setView('treemap')\"><i class=\"fa fa-th-large\"></i> Treemap</a> <a class=\"btn btn-default\" ng-class=\"{'active': view == 'sankey'}\" ng-click=\"setView('sankey')\"><i class=\"fa fa-random\"></i> Flow</a></div></div></div></div><div class=\"row\"><div class=\"col-md-9\"><div ng-if=\"view == 'crosstab'\"><babbage-crosstab></babbage-crosstab></div><div ng-if=\"view == 'facts'\"><babbage-facts></babbage-facts></div><div ng-if=\"view == 'treemap'\"><babbage-treemap></babbage-treemap></div><div ng-if=\"view == 'barchart'\"><babbage-chart chart-type=\"bar\"></babbage-chart></div><div ng-if=\"view == 'linechart'\"><babbage-chart chart-type=\"line\"></babbage-chart></div><div ng-if=\"view == 'sankey'\"><babbage-sankey></babbage-sankey></div></div><div class=\"col-md-3\"><babbage-panel></babbage-panel><div class=\"embed-link\"><p class=\"help-block\">Embed this view into another website:</p><div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"fa fa-external-link-square\"></i></span> <input type=\"text\" class=\"form-control\" readonly=\"readonly\" value=\"<style>.babbage-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;} .babbage-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;}</style><div class='babbage-embed'><iframe src='{{embedLink}}' frameborder='0' allowfullscreen></iframe></div>\"></div></div></div></div></babbage>");
+}]);
+;var ngBabbage = angular.module('ngBabbage', ['ngBabbage.templates']);
+
+var ngBabbageGlobals = ngBabbageGlobals || {};
+ngBabbageGlobals.numberFormat = d3.format("0,000");
+ngBabbageGlobals.categoryColors = [
+    "#CF3D1E", "#F15623", "#F68B1F", "#FFC60B", "#DFCE21",
+    "#BCD631", "#95C93D", "#48B85C", "#00833D", "#00B48D",
+    "#60C4B1", "#27C4F4", "#478DCB", "#3E67B1", "#4251A3", "#59449B",
+    "#6E3F7C", "#6A246D", "#8A4873", "#EB0080", "#EF58A0", "#C05A89"
+    ];
+ngBabbageGlobals.colorScale = d3.scale.ordinal().range(ngBabbageGlobals.categoryColors);
+
+if(!ngBabbageGlobals.embedSite) {
+  var url = window.location.href.split('#')[0],
+      lastSlash = url.lastIndexOf('/'),
+      lastSlash = lastSlash == -1 ? url.length : lastSlash;
+  ngBabbageGlobals.embedSite = url.slice(0, lastSlash);
+}
+ngBabbageGlobals.embedLink = ngBabbageGlobals.embedSite + '/embed.html';
+
+
+ngBabbage.filter('numeric', function() {
+  return function(val) {
+    var fval = parseFloat(val)
+    if (isNaN(fval)) {
+      return '-';
+    }
+    return ngBabbageGlobals.numberFormat(Math.round(fval));
+  };
+});
+;
+ngBabbage.factory('babbageApi', ['$http', '$q', 'slugifyFilter', function($http, $q, slugifyFilter) {
+  var cache = {};
+
+  var getUrl = function(endpoint, cube, path) {
+    var api = endpoint.slice(),
+        api = api.endsWith('/') ? api.slice(0, api.length - 1) : api,
+        api = api + '/cubes/' + cube + '/' + path;
+    return api;
+  };
+
+  var getCached = function(url) {
+    if (!angular.isDefined(cache[url])) {
+      cache[url] = $http.get(url);
+    }
+    return cache[url];
+  };
+
+  var getModel = function(endpoint, cube) {
+    return getCached(getUrl(endpoint, cube, 'model')).then(function(res) {
+      var model = res.data.model;
+      model.refs = {};
+      model.refKeys = {};
+      model.refLabels = {};
+
+      for (var i in model.measures) {
+        var measure = model.measures[i];
+        measure.numeric = true;
+        measure.hideLabel = true;
+        model.refs[measure.ref] = measure;
+      }
+
+      for (var i in model.aggregates) {
+        var agg = model.aggregates[i];
+        agg.numeric = true;
+        agg.hideLabel = true;
+        model.refs[agg.ref] = agg;
+      }
+
+      for (var di in model.dimensions) {
+        var dim = model.dimensions[di];
+        for (var ai in dim.attributes) {
+          var attr = dim.attributes[ai],
+              nested = attr.ref.indexOf('.') != -1;
+          attr.dimension = dim;
+          attr.hideLabel = slugifyFilter(attr.label) == slugifyFilter(dim.label);
+          model.refs[attr.ref] = attr;
+          model.refKeys[attr.ref] = nested ? dim.name + '.' + dim.key_attribute : attr.ref;
+          model.refLabels[attr.ref] = nested ? dim.name + '.' + dim.label_attribute : attr.ref;
+        }
+      }
+      return model;
+    });
+  };
+
+  var getDimensionMembers = function(endpoint, cube, dimension) {
+    return getCached(getUrl(endpoint, cube, 'members/' + dimension));
+  };
+
+  var flush = function() {
+    cache = {};
+  };
+
+  return {
+    getUrl: getUrl,
+    getModel: getModel,
+    getDimensionMembers: getDimensionMembers,
+    flush: flush
+  };
+}]);
+;
+ngBabbage.directive('babbage', ['$http', '$rootScope', '$location', 'babbageApi',
+    function($http, $rootScope, $location, babbageApi) {
+  return {
+    restrict: 'E',
+    transclude: true,
+    scope: {
+      endpoint: '@',
+      cube: '@',
+      state: '=',
+      update: '&'
+    },
+    templateUrl: 'babbage-templates/babbage.html',
+    controller: ['$scope', function($scope) {
+      var self = this;
+      self.queryModel = null;
+
+      self.init = function(queryModel) {
+        self.queryModel = queryModel;
+        self.update();
+      };
+
+      self.update = function() {
+        if (self.queryModel) {
+          babbageApi.getModel($scope.endpoint, $scope.cube).then(function(model) {
+            $scope.$broadcast('babbageUpdate', model, $scope.state);
+          });
+        }
+      }
+
+      self.subscribe = function(listener) {
+        return $scope.$on('babbageUpdate', listener);
+      };
+
+      self.getState = function() {
+        return $scope.state;
+      };
+
+      self.isEmbedded = function() {
+        return $scope.state.embed == 'true';
+      };
+
+      self.setState = function(s) {
+        $scope.state = s;
+        self.update();
+        $scope.update(s);
+      };
+
+      self.getApiUrl = function(endpoint) {
+        return babbageApi.getUrl($scope.endpoint, $scope.cube, endpoint);
+      };
+
+      self.getDimensionMembers = function(dimension) {
+        return babbageApi.getDimensionMembers($scope.endpoint, $scope.cube, dimension);
+      };
+
+      self.size = function(element, height) {
+        if (self.isEmbedded()) {
+            return {
+              width: document.documentElement.clientWidth,
+              height: document.documentElement.clientHeight
+            }
+        }
+        return {
+          width: element.clientWidth,
+          height: height(element.clientWidth, element.clientHeight)
+        }
+      };
+
+      self.getSorts = function() {
+        var sorts = [],
+            order = $scope.state.order || '',
+            order = asArray(order.split(','));
+        for (var i in order) {
+          var parts = order[i].split(':'),
+              sort = {};
+          sort.ref = parts[0];
+          sort.direction = parts[1] || null;
+          if (sort.ref.length) {
+              sorts.push(sort);
+          }
+        }
+        return sorts;
+      };
+
+      self.getSort = function(ref) {
+        var sorts = self.getSorts();
+        for (var i in sorts) {
+          if (sorts[i].ref == ref) {
+            return sorts[i];
+          }
+        }
+        return {ref: ref};
+      };
+
+      self.pushSort = function(ref, direction) {
+        var sorts = self.getSorts().filter(function(s) {
+          return s.ref != ref;
+        });
+        sorts.unshift({ref: ref, direction: direction});
+        $scope.state.order = self.mergeSorts(sorts);
+        self.setState($scope.state);
+      };
+
+      self.removeSorts = function(ref) {
+        var sorts = self.getSorts().filter(function(s) {
+          return s.ref != ref;
+        });
+        return self.mergeSorts(sorts);
+      };
+
+      self.mergeSorts = function(order) {
+        var sorts = [];
+        order = asArray(order);
+        for (var i in order) {
+          var o = order[i];
+          if (angular.isObject(o) && o.ref.length) {
+            o.direction = o.direction || 'asc';
+            o = o.ref + ':' + o.direction;
+            sorts.push(o);
+          }
+        }
+        return sorts.join(',');
+      };
+
+      self.getQuery = function() {
+        var q = {
+          drilldown: [],
+          aggregates: [],
+          cut: $scope.state.cut || [],
+          page: $scope.state.page || 0,
+          pagesize: $scope.state.pagesize || 30,
+          order: self.getSorts()
+        };
+        return q;
+      };
+
+      self.queryParams = function(q) {
+        q.order = self.mergeSorts(q.order);
+
+        // join arguments and remove empty arguments
+        for (var k in q) {
+          if (angular.isArray(q[k])) {
+            if (['order', 'fields'].indexOf(k) != -1) {
+              q[k] = q[k].join(',');
+            } else {
+              q[k] = q[k].join('|');
+            }
+          }
+          q[k] = q[k] + '';
+          if (!q[k].length) {
+            delete q[k];
+          }
+        }
+        return {params: q};
+      }
+    }]
+  };
+}]);
+;
+ngBabbage.directive('babbageChart', ['$rootScope', '$http', function($rootScope, $http) {
+  return {
+    restrict: 'EA',
+    require: '^babbage',
+    scope: {
+      chartType: '@'
+    },
+    templateUrl: 'babbage-templates/chart.html',
+    link: function(scope, element, attrs, babbageCtrl) {
+      scope.queryLoaded = false;
+      scope.cutoffWarning = false;
+      scope.cutoff = 0;
+
+      var getNames = function(model) {
+        var names = {};
+        for (var ref in model.refs) {
+          var concept = model.refs[ref];
+          names[ref] = concept.label || concept.name || ref;
+        }
+        return names;
+      };
+
+      var generateColumns = function(cells, category, grouping, value) {
+        var columns = [[category]], series = {category: 0};
+        for (var i in cells) {
+          var cell = cells[i],
+              field = grouping ? cell[grouping] : value;
+          if (!series[field]) {
+            series[field] = columns.push([field]) - 1;
+          }
+          if (columns[0].indexOf(cell[category]) < 1) {
+            columns[0].push(cell[category]);
+          }
+          var index = columns[0].indexOf(cell[category]);
+          columns[series[field]][index] = cell[value];
+        }
+        var maxLength = Math.max.apply(null, columns.map(function(r) {
+          return r.length;
+        }));
+        for (var i = 1; i < maxLength; i++) {
+          for (var j in columns) {
+            columns[j][i] = columns[j][i] || 0;
+          }
+        }
+        return columns;
+      };
+
+      var query = function(model, state) {
+        var category = asArray(state.category)[0],
+            grouping = asArray(state.grouping)[0],
+            value = asArray(state.value)[0];
+
+        if (!value || !category) return;
+
+        var q = babbageCtrl.getQuery();
+        q.aggregates = [value];
+        q.drilldown = [category];
+        if (grouping) {
+          q.drilldown.push(grouping);
+        }
+
+        var order = [];
+        for (var i in q.order) {
+          var o = q.order[i];
+          if ([value, category].indexOf(o.ref) != -1) {
+            order.push(o);
+          }
+        }
+        if (!order.length) {
+          order = [{ref: value, direction: 'desc'}];
+        }
+        if (grouping && order[0] && order[0].ref != grouping) {
+          order.unshift({ref: grouping, direction: 'asc'});
+        }
+
+        q.order = order;
+        q.page = 0;
+        q.pagesize = 10000;
+
+        var dfd = $http.get(babbageCtrl.getApiUrl('aggregate'),
+                            babbageCtrl.queryParams(q));
+        dfd.then(function(res) {
+          queryResult(res.data, q, model, state, category, grouping, value);
+        });
+      };
+
+      var queryResult = function(data, q, model, state, category, grouping, value) {
+        var wrapper = element.querySelectorAll('.chart-babbage')[0],
+            size = babbageCtrl.size(wrapper, function(w) {
+              return w * 0.6;
+            }),
+            colors = ngBabbageGlobals.colorScale.copy(),
+            columns = generateColumns(data.cells, category, grouping, value),
+            names = getNames(model),
+            groups = [], types = {},
+            chartType = scope.chartType;
+
+        if (grouping && chartType == 'line') {
+          chartType = 'area';
+        }
+
+        for (var i in columns) {
+          if (i > 0) {
+            if (grouping) {
+              key = randomKey();
+              names[key] = columns[i][0];
+              columns[i][0] = key;
+              groups.push(key);
+            } else {
+              groups.push(columns[i][0]);
+            }
+            types[columns[i][0]] = chartType;
+          }
+        }
+
+        d3.select(wrapper)
+          .style("width", size.width + "px")
+          .style("height", size.height + "px");
+
+        var chart = c3.generate({
+          bindto: wrapper,
+          data: {
+              columns: columns,
+              names: names,
+              color: function(color, d) {
+                var c = d.id || d;
+                if (chartType == 'bar' && !grouping) {
+                  c = d.index;
+                };
+                return colors(c);
+              },
+              order: null,
+              x: category,
+              groups: [groups],
+              types: types
+          },
+          point: {
+            show: false
+          },
+          grid: {
+            focus: {
+              show: false
+            }
+          },
+          axis: {
+              x: {
+                  type: 'category',
+                  tick: {
+                    culling: true,
+                    fit: true
+                  }
+              },
+              y : {
+                 tick: {
+                     format: ngBabbageGlobals.numberFormat,
+                     culling: true,
+                     fit: true
+                 },
+                 lines: [{value:0}]
+             }
+          }
+        });
+
+        scope.queryLoaded = true;
+        scope.cutoffWarning = data.total_cell_count > q.pagesize;
+        scope.cutoff = q.pagesize;
+      };
+
+      var unsubscribe = babbageCtrl.subscribe(function(event, model, state) {
+        query(model, state);
+      });
+      scope.$on('$destroy', unsubscribe);
+
+      var queryModel = {
+        value: {
+          label: 'Value',
+          addLabel: 'set height',
+          types: ['aggregates'],
+          defaults: [],
+          sortId: 1,
+          multiple: false
+        },
+        grouping: {
+          label: 'Grouping (opt)',
+          addLabel: 'select',
+          types: ['attributes'],
+          defaults: [],
+          sortId: 2,
+          remove: true,
+          multiple: false
+        }
+      };
+
+      if (scope.chartType == 'line') {
+        queryModel.category = {
+          label: 'Series',
+          addLabel: 'set series',
+          types: ['attributes'],
+          defaults: [],
+          sortId: 0,
+          multiple: false
+        };
+      }
+
+      if (scope.chartType == 'bar') {
+        queryModel.category = {
+          label: 'Categories',
+          addLabel: 'set bars',
+          types: ['attributes'],
+          defaults: [],
+          sortId: 0,
+          multiple: false
+        };
+      }
+
+      babbageCtrl.init(queryModel);
+    }
+  }
+}]);
+;var VAL_KEY = '@@@@',
+    POS_KEY = '!@!@'
+
+ngBabbage.directive('babbageCrosstab', ['$rootScope', '$http', function($rootScope, $http) {
+  return {
+  restrict: 'EA',
+  require: '^babbage',
+  scope: {
+    drilldown: '='
+  },
+  templateUrl: 'babbage-templates/crosstab.html',
+  link: function(scope, element, attrs, babbageCtrl) {
+    scope.queryLoaded = false;
+    scope.columns = [];
+    scope.rows = [];
+    scope.table = [];
+
+    var query = function(model, state) {
+      state.rows = asArray(state.rows);
+      state.columns = asArray(state.columns);
+      state.aggregates = asArray(state.aggregates);
+      // TODO: handle a case in which both sets contain the same
+      // ref.
+
+      var q = babbageCtrl.getQuery();
+      q.aggregates = q.aggregates.concat(state.aggregates);
+      if (!q.aggregates.length) {
+        q.aggregates = defaultAggregates(model);
+      }
+      q.drilldown = q.drilldown.concat(state.rows);
+      q.drilldown = q.drilldown.concat(state.columns);
+      q.page = 0;
+      q.pagesize = q.pagesize * 10000;
+
+      q.order = asArray(q.order);
+      var drilldowns = state.rows.concat(state.columns),
+          refs = drilldowns.concat(q.aggregates);
+      for (var i in drilldowns) {
+        var dd = drilldowns[i];
+        if (!babbageCtrl.getSort(dd).direction) {
+          if (q.order.indexOf(dd) == -1) {
+            q.order.push({ref: dd});
+          }
+        }
+      }
+      var order = [];
+      for (var i in q.order) {
+        var o = q.order[i];
+        if (refs.indexOf(o.ref) != -1) {
+          order.push(o);
+        }
+      }
+      q.order = order;
+
+      var dfd = $http.get(babbageCtrl.getApiUrl('aggregate'),
+                          babbageCtrl.queryParams(q));
+      dfd.then(function(res) {
+        queryResult(res.data, q, model, state);
+      });
+    };
+
+    var queryResult = function(data, q, model, state) {
+      state.rows = asArray(state.rows);
+      state.columns = asArray(state.columns);
+
+      var aggregates = data.aggregates.map(function(agg) {
+        return model.aggregates[agg];
+      });
+
+      // following code inspired by:
+      // https://github.com/DataBrewery/babbage/blob/master/babbage/formatters.py#L218
+      var matrix = {}, table = [],
+          row_headers = [], column_headers = [],
+          row_keys = [], column_keys = [];
+
+      for (var i in data.cells) {
+        var pickValue = function(k) { return cell[k]; },
+            pickRefs = function(k) { return cell[model.refKeys[k]] + cell[k]; };
+
+        var cell = data.cells[i],
+            row_values = state.rows.map(pickValue),
+            row_set = state.rows.map(pickRefs).join(VAL_KEY),
+            all_column_values = state.columns.map(pickValue),
+            all_column_set = state.columns.map(pickRefs);
+
+        for (var k in aggregates) {
+          var agg = aggregates[k],
+              label = agg.label || agg.name,
+              column_values = all_column_values.concat([label]);
+              column_set = all_column_set.concat([label]).join(VAL_KEY)
+
+          if (row_keys.indexOf(row_set) == -1) {
+            row_keys.push(row_set);
+            row_values.key = row_set;
+            row_headers.push(row_values);
+          }
+
+          if (column_keys.indexOf(column_set) == -1) {
+            column_keys.push(column_set);
+            column_headers.push(column_values);
+          }
+
+          var key = [row_set, column_set].join(POS_KEY);
+          matrix[key] = cell[agg.ref];
+        }
+      }
+
+      for (var i in row_keys) {
+        var row_key = row_keys[i];
+        var row = [];
+        for (var j in column_keys) {
+          var column_key = column_keys[j];
+          var key = [row_key, column_key].join(POS_KEY);
+          row.push(matrix[key] || data.aggregates.map(function(a) { return undefined; }));
+        }
+        table.push(row);
+      }
+
+      scope.rows = row_headers;
+      scope.columns = column_headers;
+      scope.table = table;
+      scope.queryLoaded = true;
+    };
+
+
+    var unsubscribe = babbageCtrl.subscribe(function(event, model, state) {
+      query(model, state);
+    });
+    scope.$on('$destroy', unsubscribe);
+
+    var defaultAggregates = function(model) {
+      var aggs = [];
+      for (var i in model.aggregates) {
+        var agg = model.aggregates[i];
+        aggs.push(agg.ref);
+      }
+      return aggs;
+    };
+
+    // console.log('crosstab init');
+    babbageCtrl.init({
+      columns: {
+        label: 'Columns',
+        addLabel: 'add column',
+        types: ['attributes'],
+        defaults: [],
+        sortId: 0,
+        multiple: true
+      },
+      rows: {
+        label: 'Rows',
+        addLabel: 'add row',
+        types: ['attributes'],
+        defaults: [],
+        sortId: 1,
+        multiple: true
+      },
+      aggregates: {
+        label: 'Values',
+        addLabel: 'add value',
+        types: ['aggregates'],
+        defaults: defaultAggregates,
+        sortId: 2,
+        multiple: true
+      },
+
+    });
+  }
+  };
+}]);
+;
+ngBabbage.directive('babbageFacts', ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
+  return {
+  restrict: 'EA',
+  require: '^babbage',
+  scope: {
+    drilldown: '='
+  },
+  templateUrl: 'babbage-templates/facts.html',
+  link: function(scope, element, attrs, babbageCtrl) {
+    scope.page = 0;
+    scope.data = [];
+    scope.columns = [];
+    scope.pagerCtx = {};
+    scope.getSort = babbageCtrl.getSort;
+    scope.pushSort = babbageCtrl.pushSort;
+
+    var query = function(model, state) {
+      var q = babbageCtrl.getQuery();
+      q.fields = asArray(state.fields);
+      if (q.fields.length == 0) {
+        q.fields = defaultFields(model);
+      }
+
+      var order = [];
+      for (var i in q.order) {
+        var o = q.order[i];
+        if (q.fields.indexOf(o.ref) != -1) {
+          order.push(o);
+        }
+      }
+      q.order = order;
+
+      var aq = angular.copy(q);
+      aq.drilldown = aq.fields = [];
+      aq.page = 0;
+      var dfd = $http.get(babbageCtrl.getApiUrl('facts'),
+                          babbageCtrl.queryParams(q));
+      dfd.then(function(res) {
+        queryResult(res.data, q, state, model);
+      });
+    };
+
+    var queryResult = function(data, q, state, model) {
+      if (!data.data.length) {
+        scope.columns = [];
+        scope.data = [];
+        scope.pagerCtx = {};
+        return;
+      };
+
+      var columns = [],
+          prev = null,
+          prev_idx = 0;
+
+      for (var i in data.fields) {
+        var ref = data.fields[i],
+            column = model.refs[ref],
+            header = column.dimension ? column.dimension : column;
+
+        if (prev && header.name == prev) {
+          columns[prev_idx].span += 1;
+          column.span = 0;
+        } else {
+          column.span = 1;
+          column.label = column.label || column.name;
+          column.header = header.label || header.name;
+          column.hide = column.hideLabel;
+          prev = header.name;
+          prev_idx = columns.length;
+        }
+        columns.push(column);
+      }
+      scope.columns = columns;
+      scope.data = data.data;
+      scope.pagerCtx = {
+        page: q.page,
+        pagesize: q.pagesize,
+        total: data.total_fact_count
+      }
+    };
+
+    var defaultFields = function(model) {
+      var defaults = [];
+      for (var i in model.measures) {
+        var mea = model.measures[i];
+        defaults.push(mea.ref);
+      }
+      for (var i in model.dimensions) {
+        var dim = model.dimensions[i];
+        for (var k in dim.attributes) {
+          var attr = dim.attributes[k];
+          if (k == dim.label_attribute) {
+            defaults.push(attr.ref);
+          }
+        }
+      }
+      return defaults;
+    };
+
+    var unsubscribe = babbageCtrl.subscribe(function(event, model, state) {
+      query(model, state);
+    });
+    scope.$on('$destroy', unsubscribe);
+
+    // console.log('facts init');
+    babbageCtrl.init({
+      fields: {
+        label: 'Columns',
+        addLabel: 'add column',
+        types: ['attributes', 'measures'],
+        defaults: defaultFields,
+        sortId: 0,
+        multiple: true
+      }
+    });
+  }
+  };
+}]);
+;
+ngBabbage.directive('babbagePager', ['$timeout', '$location', function ($timeout, $location) {
+  return {
+    restrict: 'E',
+    require: '^babbage',
+    scope: {
+      'context': '='
+    },
+    templateUrl: 'babbage-templates/pager.html',
+    link: function (scope, element, attrs, babbageCtrl) {
+      scope.showPager = false;
+      scope.hasPrev = false;
+      scope.hasNext = false;
+      scope.pages = [];
+      scope.cur = 0;
+      scope.num = 0;
+
+      scope.$watch('context', function(e) {
+        if (!scope.context || scope.context.total <= scope.context.pagesize) {
+          return;
+        }
+        scope.current = parseInt(scope.context.page, 10) || 0;
+        scope.num = Math.ceil(scope.context.total / scope.context.pagesize)
+        var pages = [],
+          num = scope.num,
+          range = 3,
+          low = scope.current - range,
+          high = scope.current + range;
+
+        if (low < 0) {
+          low = 0;
+          high = Math.min((2*range)+1, num);
+        }
+        if (high > num) {
+          high = num;
+          low = Math.max(1, num - (2*range)+1);
+        }
+
+        for (var page = low; page <= high; page++) {
+          // var offset = (page - 1) * scope.context.pagesize;
+          pages.push({
+            page: page,
+            current: page == scope.current,
+            //offset: offset
+          });
+        }
+        scope.hasPrev = scope.current > 0;
+        scope.hasNext = scope.current < num;
+        scope.showPager = num > 1;
+        scope.pages = pages;
+      });
+
+      scope.setPage = function(page) {
+        if (page >= 0 && page <= scope.num) {
+          var state = babbageCtrl.getState();
+          state.page = page;
+          babbageCtrl.setState(state);
+        }
+      }
+    }
+  };
+}]);
+;
+ngBabbage.directive('babbagePanel', ['$rootScope', 'slugifyFilter', function($rootScope, slugifyFilter) {
+  return {
+    restrict: 'EA',
+    require: '^babbage',
+    scope: {
+    },
+    templateUrl: 'babbage-templates/panel.html',
+    link: function($scope, $element, attrs, babbageCtrl) {
+      var model = null;
+
+      $scope.state = {};
+      $scope.axes = [];
+      $scope.filterAttributes = [];
+      $scope.filters = [];
+      $scope.getSort = babbageCtrl.getSort;
+      $scope.pushSort = babbageCtrl.pushSort;
+      $scope.embedLink = null;
+
+      var update = function() {
+        babbageCtrl.setState($scope.state);
+      };
+
+      $scope.add = function(axis, ref) {
+        if (axis.selected.indexOf(ref) == -1) {
+          if (axis.multiple) {
+            axis.selected.push(ref);
+          } else {
+            if (axis.selected.length) {
+              $scope.state.order = babbageCtrl.removeSorts(axis.selected[0]);
+            }
+            axis.selected = [ref];
+          }
+          $scope.state[axis.name] = axis.selected;
+          update();
+        }
+      };
+
+      $scope.remove = function(axis, ref) {
+        var i = axis.selected.indexOf(ref);
+        if (i != -1) {
+          axis.selected.splice(i, 1);
+          $scope.state[axis.name] = axis.selected;
+          $scope.state.order = babbageCtrl.removeSorts(ref);
+          update();
+        }
+      };
+
+      var makeOptions = function() {
+        var options = [];
+        for (var di in model.dimensions) {
+          var dim = model.dimensions[di];
+          for (var ai in dim.attributes) {
+            var attr = angular.copy(dim.attributes[ai]);
+            attr.dimension = dim;
+            attr.type = 'attributes';
+            if (slugifyFilter(dim.label) != slugifyFilter(attr.label)) {
+              attr.subLabel = '' + attr.label;
+            }
+            attr.sortKey = '0' + dim.label + attr.label;
+            attr.label = dim.label;
+            options.push(attr);
+          }
+        }
+
+        for (var ai in model.aggregates) {
+          var agg = model.aggregates[ai];
+          agg.type = 'aggregates';
+          agg.sortKey = '1' + ai;
+          options.push(agg);
+        }
+
+        for (var mi in model.measures) {
+          var mea = model.measures[mi];
+          mea.type = 'measures';
+          mea.sortKey = '2' + mi;
+          options.push(mea);
+        }
+
+        return options;
+      }
+
+      var sortOptions = function(a, b) {
+        return a.label.localeCompare(b.label);
+      }
+
+      var makeAxes = function(state, options) {
+        var axes = [];
+        if (!babbageCtrl.queryModel) return [];
+
+        for (var name in babbageCtrl.queryModel) {
+          var axis = babbageCtrl.queryModel[name];
+          axis.name = name;
+          if (!angular.isDefined(axis.remove)) {
+            axis.remove = axis.multiple;
+          }
+          axis.sortId = axis.sortId || 1;
+          axis.available = [];
+          axis.active = [];
+
+          axis.selected = asArray(state[name]);
+          if (!axis.selected.length) {
+            if (angular.isFunction(axis.defaults)) {
+              axis.selected = axis.defaults(model);
+            } else {
+              axis.selected = asArray(axis.defaults);
+            }
+          }
+          axis.available = axis.available.sort(sortOptions);
+          axis.active = axis.active.sort(sortOptions);
+
+          for (var i in options) {
+            var opt = options[i];
+            if (axis.selected.indexOf(opt.ref) != -1) {
+              axis.active.push(opt);
+            } else if (axis.types.indexOf(opt.type) != -1) {
+              axis.available.push(opt);
+            }
+          }
+          axes.push(axis);
+        }
+
+        return axes.sort(function(a, b) {
+          return a.sortId - b.sortId;
+        });
+      };
+
+      var makeFilterAttributes = function(options) {
+        var filters = [];
+        for (var i in options) {
+          var opt = options[i];
+          if (opt.type == 'attributes' && opt.dimension.cardinality_class != 'high') {
+            if (opt.dimension.label_ref == opt.ref) {
+              filters.push(opt);
+            }
+          }
+        }
+        return filters.sort(sortOptions);
+      };
+
+      var getAttributeByRef = function(ref) {
+        for (var i in $scope.filterAttributes) {
+          var attr = $scope.filterAttributes[i];
+          if (attr.ref == ref) {
+            return attr;
+          }
+        }
+      };
+
+      var loadFilters = function(state) {
+        var cuts = asArray(state.cut);
+        for (var i in cuts) {
+          var cut = cuts[i];
+          if (cut.indexOf(':') != -1) {
+            var ref = cut.split(':', 1)[0],
+                values = cut.slice(ref.length + 1).split(';');
+            for (var j in values) {
+              $scope.addFilter(getAttributeByRef(ref), values[j]);
+            }
+          }
+        }
+      };
+
+      $scope.addFilter = function(attr, value) {
+        babbageCtrl.getDimensionMembers(attr.ref).then(function(res) {
+          $scope.filters.push({
+            ref: attr.ref,
+            attr: attr,
+            value: value,
+            values: res.data.data.map(function(e) {
+              return e[attr.ref];
+            })
+          });
+        });
+      };
+
+      $scope.removeFilter = function(filter) {
+        var idx = $scope.filters.indexOf(filter);
+        if (idx != -1) {
+          $scope.filters.splice(idx, 1);
+          $scope.updateFilters();
+        }
+      };
+
+      $scope.setFilter = function(filter, item, value) {
+        $scope.updateFilters();
+      };
+
+      $scope.updateFilters = function() {
+        var filters = {};
+        for (var i in $scope.filters) {
+          var f = $scope.filters[i];
+          if (angular.isUndefined(filters[f.ref])) {
+            filters[f.ref] = [];
+          }
+          filters[f.ref].push(f.value);
+        }
+        var cuts = [];
+        for (var ref in filters) {
+          var values = filters[ref],
+              value = values.join(';')
+              cut = ref + ':' + value;
+          cuts.push(cut);
+        }
+        $scope.state.cut = cuts;
+        update();
+      };
+
+      var unsubscribe = babbageCtrl.subscribe(function(event, mdl, state) {
+        model = mdl;
+        $scope.state = state;
+
+        var options = makeOptions();
+        $scope.axes = makeAxes(state, options);
+        $scope.filterAttributes = makeFilterAttributes(options);
+        $scope.filters = [];
+        loadFilters(state);
+
+      });
+      $scope.$on('$destroy', unsubscribe);
+
+    }
+  };
+}]);
+;
+ngBabbage.directive('babbageSankey', ['$rootScope', '$http', '$document', function($rootScope, $http, $document) {
+  return {
+  restrict: 'EA',
+  require: '^babbage',
+  scope: {
+    drilldown: '='
+  },
+  templateUrl: 'babbage-templates/sankey.html',
+  link: function(scope, element, attrs, babbageCtrl) {
+    var unit = 15,
+        margin = {top: unit / 2, right: 1, bottom: 6, left: 1},
+        svg = null, group = null;
+
+    scope.queryLoaded = false;
+    scope.cutoffWarning = false;
+    scope.cutoff = 0;
+
+    var query = function(model, state) {
+      var source = asArray(state.source)[0],
+          target = asArray(state.target)[0]
+          aggregate = asArray(state.aggregate)[0],
+          aggregate = aggregate ? [aggregate] : defaultAggregate(model);
+
+      var q = babbageCtrl.getQuery();
+      q.aggregates = aggregate;
+      if (!source || !target) {
+        return;
+      }
+      q.drilldown = [source, target];
+
+      q.order = [
+        {
+          ref: aggregate,
+          direction: 'desc'
+        },
+        {
+          ref: source,
+          direction: 'asc'
+        },
+        {
+          ref: target,
+          direction: 'asc'
+        }
+      ];
+      q.page = 0;
+      q.pagesize = 2000;
+
+      scope.queryLoaded = true;
+      scope.cutoffWarning = false;
+      var dfd = $http.get(babbageCtrl.getApiUrl('aggregate'),
+                          babbageCtrl.queryParams(q));
+
+      var wrapper = element.querySelectorAll('.sankey-babbage')[0],
+          size = babbageCtrl.size(wrapper, function(w) { return w * 0.6; });
+
+      unit = Math.max(400, size.height) / 20;
+
+      if (!svg) {
+          svg = d3.select(wrapper).append("svg");
+          group = svg.append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      }
+
+      dfd.then(function(res) {
+        queryResult(size, res.data, q, model, state);
+      });
+    };
+
+    var queryResult = function(size, data, q, model, state) {
+      var sourceRef = asArray(state.source)[0],
+          targetRef = asArray(state.target)[0]
+          aggregateRef = asArray(state.aggregate)[0],
+          aggregateRef = aggregateRef ? [aggregateRef] : defaultAggregate(model),
+          size.height = data.cells.length * unit;
+
+      svg.attr("height", size.height + margin.top + margin.bottom);
+      svg.attr("width", size.width);
+
+      var graph = {nodes: [], links: []},
+          objs = {};
+
+      var sourceScale = ngBabbageGlobals.colorScale.copy(),
+          targetScale = d3.scale.ordinal().range(['#ddd', '#ccc', '#eee', '#bbb']);
+
+      data.cells.forEach(function(cell) {
+        var sourceId = cell[sourceRef],
+            targetId = cell[targetRef],
+            link = {
+              //value: Math.sqrt(cell[aggregateRef]),
+              value: cell[aggregateRef],
+              number: ngBabbageGlobals.numberFormat(cell[aggregateRef])
+            };
+
+        if (link.value == 0 || !sourceId || !targetId) {
+          return;
+        }
+        sourceId = 'source-' + sourceRef + sourceId;
+        targetId = 'target-' + targetRef + targetId;
+
+        if (!objs[sourceId]) {
+          var label = cell[model.refLabels[sourceRef]];
+          graph.nodes.push({
+            name: label,
+            color: sourceScale(sourceId)
+          });
+          objs[sourceId] = {idx: graph.nodes.length - 1};
+        }
+        link.source = objs[sourceId].idx;
+
+        if (!objs[targetId]) {
+          var label = cell[model.refLabels[targetRef]];
+          graph.nodes.push({
+            name: label,
+            color: targetScale(targetId)
+          });
+          objs[targetId] = {
+            idx: graph.nodes.length - 1
+          };
+        }
+        link.target = objs[targetId].idx;
+        graph.links.push(link);
+      });
+
+      var sankey = d3.sankey()
+         .nodeWidth(unit)
+         .nodePadding(unit * 0.6)
+         .size([size.width, size.height]);
+
+      var path = sankey.link();
+
+      sankey
+        .nodes(graph.nodes)
+        .links(graph.links)
+        .layout(32);
+
+      group.selectAll('g').remove();
+
+      var link = group.append("g").selectAll(".link")
+          .data(graph.links)
+        .enter().append("path")
+          .attr("class", "link")
+          .attr("d", path)
+          .style("stroke-width", function(d) {
+            return Math.max(1, d.dy);
+          })
+          .style("stroke", function(d) {
+            return d.source.color;
+          })
+          .sort(function(a, b) { return b.dy - a.dy; });
+
+      link.append("title")
+          .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + d.number; });
+
+      var node = group.append("g").selectAll(".node")
+          .data(graph.nodes)
+        .enter().append("g")
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+      node.append("rect")
+          .attr("height", function(d) { return d.dy; })
+          .attr("width", sankey.nodeWidth())
+          .style("fill", function(d) { return d.color; })
+          //.style("stroke", function(d) { return d3.rgb(d.color).darker(1); })
+          .style("stroke", function(d) { return d.color; })
+        .append("title")
+          .text(function(d) { return d.name });
+
+      node.append("text")
+          .attr("x", -6)
+          .attr("y", function(d) { return d.dy / 2; })
+          .attr("dy", ".35em")
+          .attr("text-anchor", "end")
+          .attr("transform", null)
+          .text(function(d) { return d.name; })
+        .filter(function(d) { return d.x < size.width / 2; })
+          .attr("x", 6 + sankey.nodeWidth())
+          .attr("text-anchor", "start");
+
+      scope.cutoffWarning = data.total_cell_count > q.pagesize;
+      scope.cutoff = q.pagesize;
+    };
+
+    var unsubscribe = babbageCtrl.subscribe(function(event, model, state) {
+      query(model, state);
+    });
+    scope.$on('$destroy', unsubscribe);
+
+    var defaultAggregate = function(model) {
+      for (var i in model.aggregates) {
+        var agg = model.aggregates[i];
+        if (agg.measure) {
+          return [agg.ref];
+        }
+      }
+      return [];
+    };
+
+    babbageCtrl.init({
+      source: {
+        label: 'Source',
+        addLabel: 'set left side',
+        types: ['attributes'],
+        defaults: [],
+        sortId: 0,
+        multiple: false
+      },
+      target: {
+        label: 'Target',
+        addLabel: 'set right side',
+        types: ['attributes'],
+        defaults: [],
+        sortId: 1,
+        multiple: false
+      },
+      aggregate: {
+        label: 'Width',
+        addLabel: 'set width',
+        types: ['aggregates'],
+        defaults: defaultAggregate,
+        sortId: 2,
+        multiple: false
+      },
+
+    });
+  }
+  };
+}]);
+;
+ngBabbage.directive('babbageTreemap', ['$rootScope', '$http', '$document', function($rootScope, $http, $document) {
+  return {
+  restrict: 'EA',
+  require: '^babbage',
+  scope: {
+    drilldown: '='
+  },
+  templateUrl: 'babbage-templates/treemap.html',
+  link: function(scope, element, attrs, babbageCtrl) {
+    var treemap = null,
+        div = null,
+        currentState = null,
+        currentModel = null;
+
+    scope.queryLoaded = false;
+    scope.cutoffWarning = false;
+
+    var buildQuery = function(tile, area, cuts) {
+
+      var q = babbageCtrl.getQuery();
+      q.aggregates = area;
+      if (!tile) {
+        return;
+      }
+      q.drilldown = [tile];
+
+      var order = [];
+      for (var i in q.order) {
+        var o = q.order[i];
+        if ([tile, area].indexOf(o.ref) != -1) {
+          order.push(o);
+        }
+      }
+      if (!order.length) {
+        order = [{ref: area, direction: 'desc'}];
+      }
+      q.cut = cuts;
+
+      q.order = order;
+      q.page = 0;
+      q.pagesize = 50;
+      return q;
+    }
+    var query = function(model, state) {
+      var tile = asArray(state.tile)[0],
+        cuts = asArray(state.cut),
+        area = asArray(state.area)[0],
+        area = area ? [area] : defaultArea(model);
+      currentState = state;
+      currentModel = model;
+      var q = buildQuery(tile, area, cuts);
+      var dfd = $http.get(babbageCtrl.getApiUrl('aggregate'),
+                          babbageCtrl.queryParams(q));
+      if(!treemap) {
+        buildTreemap(area);
+      }
+      dfd.then(function(res) {
+        queryResult(res.data, q, model, state);
+      });
+    }
+
+    var buildTreemap = function(area) {
+      var wrapper = element.querySelectorAll('.treemap-babbage')[0],
+          size = babbageCtrl.size(wrapper, function(w) { return w * 0.6; });
+
+      treemap = d3.layout.treemap()
+        .size([size.width, size.height])
+        .sticky(false)
+        .sort(function(a, b) { return a[area] - b[area]; })
+        .value(function(d) { return d[area]; });
+
+      div = d3.select(wrapper).append("div")
+        .style("position", "relative")
+        .style("width", size.width + "px")
+        .style("height", size.height + "px");
+
+    };
+
+    var queryResult = function(data, q, model, state) {
+      var tileRef = asArray(state.tile)[0],
+          areaRef = asArray(state.area)[0],
+          areaRef = areaRef ? [areaRef] : defaultArea(model);
+
+      scope.queryLoaded = true;
+
+      var root = {
+        children: []
+      };
+
+      for (var i in data.cells) {
+        var cell = data.cells[i];
+        cell._area_fmt = ngBabbageGlobals.numberFormat(Math.round(cell[areaRef]));
+        cell._name = cell[tileRef];
+        cell._color = ngBabbageGlobals.colorScale(i);
+        cell._percentage = cell[areaRef] / Math.max(data.summary[areaRef], 1);
+        root.children.push(cell);
+      };
+      var nodes = div.datum(root).selectAll(".node")
+          .data(treemap.nodes)
+        nodes.exit().remove();
+        nodes.enter().append("a");
+        var node = nodes
+          .attr("href", function(d){ return d.href; })
+          .attr("class", "node")
+          .call(positionNode)
+          .style("background", '#fff')
+          .html(function(d) {
+            if (d._percentage < 0.02) {
+              return '';
+            }
+            return d.children ? null : '<span class="amount">' + d._area_fmt + '</span>' + d._name;
+          })
+          .on("mouseover", function(d) {
+            d3.select(this).transition().duration(200)
+              .style({'background': d3.rgb(d._color).darker() });
+          })
+          .on("mouseout", function(d) {
+            d3.select(this).transition().duration(500)
+              .style({'background': d._color});
+          })
+          .on("click", setTile)
+          .transition()
+          .duration(500)
+          .delay(function(d, i) { return Math.min(i * 30, 1500); })
+          .style("background", function(d) { return d._color; });
+
+      scope.cutoffWarning = data.total_cell_count > q.pagesize;
+      scope.cutoff = q.pagesize;
+    };
+
+    function setTile(d) {
+      if(currentState.hirachy) {
+        var cut = currentState.tile[0] + ':' + d[currentState.tile[0]],
+          hirachy = currentState.hirachy[currentState.tile[0]];
+        if(hirachy) {
+          currentState.tile = [ hirachy ];
+        }
+        currentState.cut = currentState.cut.concat([cut])
+        query(currentModel, currentState);
+      }
+    };
+
+    function positionNode() {
+      this.style("left", function(d) { return d.x + "px"; })
+          .style("top", function(d) { return d.y + "px"; })
+          .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+          .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    };
+
+
+    var unsubscribe = babbageCtrl.subscribe(function(event, model, state) {
+      query(model, state);
+    });
+    scope.$on('$destroy', unsubscribe);
+
+    var defaultArea = function(model) {
+      for (var i in model.aggregates) {
+        var agg = model.aggregates[i];
+        if (agg.measure) {
+          return [agg.ref];
+        }
+      }
+      return [];
+    };
+
+    babbageCtrl.init({
+      tile: {
+        label: 'Tiles',
+        addLabel: 'set breakdown',
+        types: ['attributes'],
+        defaults: [],
+        sortId: 0,
+        multiple: false
+      },
+      area: {
+        label: 'Area',
+        addLabel: 'set area',
+        types: ['aggregates'],
+        defaults: defaultArea,
+        sortId: 1,
+        multiple: false
+      },
+    });
+  }
+  };
+}]);
+;
+function asArray(obj) {
+  objs = obj ? obj : [];
+  return angular.isArray(objs) ? objs : [objs];
+}
+
+function randomKey() {
+  return 'X' + Math.random().toString(36).substring(7);
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
+// suggested polyfill for safari & IE
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function(searchString, position) {
+      var subjectString = this.toString();
+      if (position === undefined || position > subjectString.length) {
+        position = subjectString.length;
+      }
+      position -= searchString.length;
+      var lastIndex = subjectString.indexOf(searchString, position);
+      return lastIndex !== -1 && lastIndex === position;
+  };
+}
+;
+ngBabbage.directive('babbageWorkspace', ['$location', function($location) {
+  return {
+    restrict: 'EA',
+    scope: {
+      endpoint: '@',
+      cube: '@'
+    },
+    templateUrl: 'babbage-templates/workspace.html',
+    link: function(scope, element, attrs) {
+      scope.state = null;
+      scope.embedLink = null;
+
+      scope.setView = function(view) {
+        scope.view = view;
+        scope.state.view = view;
+        scope.update(scope.state);
+      };
+
+      scope.update = function(state) {
+        scope.state = state;
+        scope.view = scope.state.view || 'facts';
+        $location.search(state);
+        prepareEmbed();
+      };
+
+      var prepareEmbed = function() {
+        var qs = [],
+            opts = angular.extend({}, $location.search(), {
+              view: scope.view,
+              endpoint: scope.endpoint,
+              cube: scope.cube,
+              embed: true
+            });
+        for (var name in opts) {
+          var values = asArray(opts[name]);
+          for (var i in values) {
+            var val = encodeURIComponent(values[i]);
+            qs.push(name + '=' + val);
+          }
+        }
+        scope.embedLink = ngBabbageGlobals.embedLink + '#/?' + qs.join('&');
+      };
+
+      scope.update($location.search());
+    }
+  };
+}]);
 var demo = angular.module('demo', ['ngRoute', 'ngBabbage', 'angular.filter', 'ui.bootstrap', 'ui.select']);
 
 demo.controller('DemoCtrl', function ($scope) {
+  $scope.einnahmenAusgaben = 'einnahmeausgabe.einnahmeausgabe:Einnahme';
   $scope.state = {
-    tile: ['funktionbezeichnung.funktionbezeichnung'],
-    cut: [ 'einnahmeausgabe.einnahmeausgabe:Einnahme' ]
+    //tile: ['einzelplanbezeichnung.einzelplanbezeichnung'],
+    tile: ['hauptgruppe.hauptgruppenbezeichnung'],
+    cut: [ 'einnahmeausgabe.einnahmeausgabe:Einnahme' ],
+    hirachy: {
+      'einzelplanbezeichnung.einzelplanbezeichnung': 'kapitel.kapitelbezeichnung',
+      'kapitel.kapitelbezeichnung': 'zweckbestimmung.zweckbestimmung',
+      'hauptgruppe.hauptgruppenbezeichnung': 'obergruppe.obergruppenbezeichnung',
+      'obergruppe.obergruppenbezeichnung': 'gruppenbezeichnung.gruppenbezeichnung',
+      'hauptfunktion.hauptfunktionbezeichnung': 'oberfunktion.oberfunktionbezeichnung',
+      'oberfunktion.oberfunktionbezeichnung': 'funktionbezeichnung.funktionbezeichnung'
+    }
   }
   $scope.einahmenausgaben = [{label: 'Einnahmen', id: 'einnahmeausgabe.einnahmeausgabe:Einnahme'},{label: 'Ausgaben', id: 'einnahmeausgabe.einnahmeausgabe:Ausgabe'}]
   $scope.changeEinahmenAusgaben = function(attr) {
+    $scope.einnahmenAusgaben = attr.id;
     $scope.state.cut = [attr.id];
+  }
+  $scope.setTile = function(tile) {
+    $scope.state.tile = [tile];
+    $scope.state.cut = [ $scope.einnahmenAusgaben ];
   }
 });
 demo.directive('filter', ['$rootScope', function($rootScope) {
@@ -65529,11 +67129,16 @@ demo.directive('filter', ['$rootScope', function($rootScope) {
     restrict: 'EA',
     require: '^babbage',
     scope: {
-      filter: '@'
+      state: '='
     },
     link: function(scope, element, attrs, babbageCtrl) {
-      //$rootScope.state.cut = ['test'];
       babbageCtrl.setState(scope.state);
+
+      scope.$watch('state', function(oldValue, newValue) {
+        if(oldValue !== newValue) {
+          babbageCtrl.update();
+        };
+      }, true);
     }
   }
 }]);
