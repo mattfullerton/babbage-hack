@@ -67116,6 +67116,22 @@ ngBabbage.directive('babbageWorkspace', ['$location', function($location) {
 }]);
 var demo = angular.module('demo', ['ngRoute', 'ngBabbage', 'angular.filter', 'ui.bootstrap', 'ui.select']);
 
+d3.locale.de_DE = d3.locale({
+  decimal: ",",
+  thousands: ".",
+  grouping: [3],
+  currency: ["", " €"],
+  dateTime: "%A, der %e. %B %Y, %X",
+  date: "%d.%m.%Y",
+  time: "%H:%M:%S",
+  periods: ["AM", "PM"], // unused
+  days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+  shortDays: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+  months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+  shortMonths: ["Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+});
+
+ngBabbageGlobals.numberFormat = d3.locale.de_DE.numberFormat("$,.")
 demo.controller('DemoCtrl', function ($scope) {
   $scope.einahmeAusgabe = 'Einnahmen';
 	$scope.defaultCut = ['einnahmeausgabe.einnahmeausgabe:Einnahme'];
@@ -67435,7 +67451,7 @@ demo.directive('treemapTable', ['$rootScope', '$http', function($rootScope, $htt
           cell.value_fmt = ngBabbageGlobals.numberFormat(Math.round(cell[areaRef]));
           cell.name = cell[tileRef];
           cell.color = ngBabbageGlobals.colorScale(i);
-					cell.percentage = parseFloat(cell[areaRef] / Math.max(data.summary[areaRef], 1)*100).toFixed(2);
+					cell.percentage = d3.locale.de_DE.numberFormat("%")(cell[areaRef] / Math.max(data.summary[areaRef], 1));
           scope.rows.push(cell);
         };
 				scope.summary = { value_fmt: ngBabbageGlobals.numberFormat(Math.round(data.summary[areaRef]))};
