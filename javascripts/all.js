@@ -66239,7 +66239,7 @@ ngBabbage.directive('babbageFacts', ['$rootScope', '$http', '$q', function($root
       q.order = order;
 
       var aq = angular.copy(q);
-      aq.drilldown = aq.fields = [];
+      aq.drilldown = scope.drilldown; //aq.fields = [];
       aq.page = 0;
       var dfd = $http.get(babbageCtrl.getApiUrl('facts'),
                           babbageCtrl.queryParams(q));
@@ -66850,9 +66850,7 @@ ngBabbage.directive('babbageTreemap', ['$rootScope', '$http', '$document', funct
   templateUrl: 'babbage-templates/treemap.html',
   link: function(scope, element, attrs, babbageCtrl) {
     var treemap = null,
-        div = null,
-        currentState = null,
-        currentModel = null;
+        div = null;
 
     scope.queryLoaded = false;
     scope.cutoffWarning = false;
@@ -66888,8 +66886,6 @@ ngBabbage.directive('babbageTreemap', ['$rootScope', '$http', '$document', funct
         cuts = asArray(state.cut),
         area = asArray(state.area)[0],
         area = area ? [area] : defaultArea(model);
-      currentState = state;
-      currentModel = model;
       var q = buildQuery(tile, area, cuts);
       var dfd = $http.get(babbageCtrl.getApiUrl('aggregate'),
                           babbageCtrl.queryParams(q));
@@ -66971,14 +66967,32 @@ ngBabbage.directive('babbageTreemap', ['$rootScope', '$http', '$document', funct
     };
 
     function setTile(d) {
-      if(currentState.hirachy) {
+      var currentState = babbageCtrl.getState();
+      if(currentState.hierarchies) {
         var cut = currentState.tile[0] + ':' + d[currentState.tile[0]],
-          hirachy = currentState.hirachy[currentState.tile[0]];
-        if(hirachy) {
-          currentState.tile = [ hirachy ];
+          hierarchy = currentState.hierarchies[currentState.tile[0]];
+        if(hierarchy) {
+          currentState.tile = [ hierarchy.levels[0] ];
+          currentState.cut = currentState.cut.concat([cut])
+          babbageCtrl.setState(currentState);
+        }else {
+          for(var name in currentState.hierarchies) {
+             var hierarchy = currentState.hierarchies[name];
+             if(hierarchy && hierarchy.levels) {
+               var levelLength = hierarchy.levels.length;
+                for(var i=0;i<levelLength;i++) {
+                  if(currentState.tile[0] == hierarchy.levels[i]) {
+                    var nextLevel = i+1;
+                    if(nextLevel < levelLength) {
+                      currentState.tile = [ hierarchy.levels[nextLevel] ];
+                      currentState.cut = currentState.cut.concat([cut])
+                      babbageCtrl.setState(currentState);
+                    }
+                  }
+                }
+             }
+          }
         }
-        currentState.cut = currentState.cut.concat([cut])
-        query(currentModel, currentState);
       }
     };
 
@@ -67100,45 +67114,333 @@ ngBabbage.directive('babbageWorkspace', ['$location', function($location) {
 var demo = angular.module('demo', ['ngRoute', 'ngBabbage', 'angular.filter', 'ui.bootstrap', 'ui.select']);
 
 demo.controller('DemoCtrl', function ($scope) {
-  $scope.einnahmenAusgaben = 'einnahmeausgabe.einnahmeausgabe:Einnahme';
+  $scope.einahmeAusgabe = 'Einnahmen';
+  $scope.defaultCut = ['titelart:Einnahmetitel', 'jahr:2016'];
   $scope.state = {
-    //tile: ['einzelplanbezeichnung.einzelplanbezeichnung'],
     tile: ['hauptgruppe.hauptgruppenbezeichnung'],
-    cut: [ 'einnahmeausgabe.einnahmeausgabe:Einnahme' ],
-    hirachy: {
-      'einzelplanbezeichnung.einzelplanbezeichnung': 'kapitel.kapitelbezeichnung',
-      'kapitel.kapitelbezeichnung': 'zweckbestimmung.zweckbestimmung',
-      'hauptgruppe.hauptgruppenbezeichnung': 'obergruppe.obergruppenbezeichnung',
-      'obergruppe.obergruppenbezeichnung': 'gruppenbezeichnung.gruppenbezeichnung',
-      'hauptfunktion.hauptfunktionbezeichnung': 'oberfunktion.oberfunktionbezeichnung',
-      'oberfunktion.oberfunktionbezeichnung': 'funktionbezeichnung.funktionbezeichnung'
+    cut: $scope.defaultCut,
+    hierarchies: {
+      'einzelplan.einzelplanbezeichnung': {
+        label: 'Einzelplan',
+        levels: ['kapitel.kapitelbezeichnung', 'titel.titelbezeichnung']
+      },
+      'hauptgruppe.hauptgruppenbezeichnung': {
+        label: 'Hauptgruppe',
+        levels: [ 'obergruppe.obergruppenbezeichnung', 'gruppe.gruppenbezeichnung']
+      },
+      'hauptfunktion.hauptfunktionsbezeichnung': {
+        label: 'Hauptfunktion',
+        levels: ['oberfunktion.oberfunktionsbezeichnung', 'funktion.funktionsbezeichnung']
+      }
     }
   }
-  $scope.einahmenausgaben = [{label: 'Einnahmen', id: 'einnahmeausgabe.einnahmeausgabe:Einnahme'},{label: 'Ausgaben', id: 'einnahmeausgabe.einnahmeausgabe:Ausgabe'}]
-  $scope.changeEinahmenAusgaben = function(attr) {
-    $scope.einnahmenAusgaben = attr.id;
-    $scope.state.cut = [attr.id];
-  }
+  $scope.einahmenausgaben = [{label: 'Einnahmen', id: 'titelart:Einnahmetitel'},{label: 'Ausgaben', id: 'titelart:Ausgabetitel'}]
+  $scope.jahr = [{label: '2016', id: 'jahr:2016'},{label: '2017', id: 'jahr:2017'}]
   $scope.setTile = function(tile) {
+    $scope.reset = true;
     $scope.state.tile = [tile];
-    $scope.state.cut = [ $scope.einnahmenAusgaben ];
+    $scope.state.cut = [ $scope.defaultCut ];
   }
 });
-demo.directive('filter', ['$rootScope', function($rootScope) {
+demo.directive('babbageCutFilter', ['$rootScope', function($rootScope) {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    replace: true,
+    require: '^babbage',
+    scope: {
+      selected: '@',
+      filter: '=',
+      defaultCut: '='
+    },
+    template: '<div class="cut-filter"></div>',
+    link: function(scope, element, attrs, babbageCtrl, transclude) {
+      transclude(scope, function(clone, scope) {
+        element.append(clone);
+      });
+      var getParentTile = function(tile) {
+        var state = babbageCtrl.getState();
+        for(var name in state.hierarchies) {
+          if(name == tile) {
+            return name;
+          }
+          var h = state.hierarchies[name];
+          for(var i in h.levels) {
+            if(h.levels[i] == tile) {
+              return name;
+            }
+          }
+        }
+      }
+      var findCutPosition = function(attrId) {
+        var cutLength = scope.defaultCut.length;
+        for(var i=0;i<cutLength;i++) {
+          var cut = scope.defaultCut[i].split(':');
+          var attr = attrId.split(':');
+          if(cut[0] == attr[0]) { return i; }
+        }
+        return -1;
+      }
+      var setNewCut = function(attrId) {
+        var pos = findCutPosition(attrId);
+        if(pos !== -1) {
+           scope.defaultCut[pos] = attrId;
+        }
+        return scope.defaultCut;
+      }
+      scope.update = function(attr) {
+        var state = babbageCtrl.getState();
+        state.cut = setNewCut(attr.id);
+        state.tile = [getParentTile(state.tile[0])];
+        scope.selected = attr.label;
+        babbageCtrl.setState(state);
+      }
+    }
+  }
+}]);
+demo.directive('dimensionFilter', ['$rootScope', function($rootScope) {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    replace: true,
+    require: '^babbage',
+    scope: {
+      dimension: '@',
+      defaultCut: '='
+    },
+    template: '<div class="babbage-dimension-filter"></div>',
+    link: function(scope, element, attrs, babbageCtrl, transclude) {
+      transclude(scope, function(clone, scope) {
+        element.append(clone);
+      });
+      scope.update = function() {
+        var state = babbageCtrl.getState();
+        state.tile = [scope.dimension];
+        state.cut = asArray(scope.defaultCut);
+        babbageCtrl.setState(state);
+      }
+    }
+  }
+}]);
+demo.directive('treemapBreadcrumb', ['$rootScope', function($rootScope) {
+  return {
+    restrict: 'EA',
+    replace: true,
+    require: '^babbage',
+    scope: { },
+    template: '<ol class="breadcrumb"><li ng-repeat="level in levels" ng-class="{ active: isActive(level) }"><a href="" ng-click="setTile(level);">{{valueForLevel(level)}}</a></li></ol>',
+    link: function(scope, element, attrs, babbageCtrl) {
+      var dimensions;
+      babbageCtrl.subscribe(function(event, model, state) {
+        dimensions = model.dimensions;
+        scope.levels = getLevels(state.hierarchies);
+      });
+      var removeLevels = function(level) {
+        var levelLength = scope.levels.length;
+        for(var i=0;i<levelLength;i++) {
+          if(scope.levels[i] == level) {
+            return scope.levels.slice(i);
+          };
+        }
+      }
+      var cutsWithOutLevels = function(levels) {
+        var state = babbageCtrl.getState();
+        var cutLength = state.cut.length;
+        var levelLength = levels.length;
+        var newCuts = [];
+        for(var i=0;i<cutLength;i++) {
+          var cut = state.cut[i];
+          var cutElements = cut.split(":");
+          var include = true;
+          for(var j=0;j<levelLength;j++) {
+            if(cutElements[0] == levels[j]) {
+              include = false;
+            }
+          }
+          if(include) {
+            newCuts.push(cut);
+          }
+        }
+        return newCuts;
+      }
+      scope.valueForLevel = function(level) {
+        for(var name in dimensions) {
+          if(dimensions[name].label_ref == level) {
+            return dimensions[name].label;
+          }
+        }
+      }
+      scope.isActive = function(level) {
+        var state = babbageCtrl.getState();
+        return level == state.tile[0];
+      }
+      scope.setTile = function(name) {
+        var state = babbageCtrl.getState();
+        state.cut = cutsWithOutLevels(removeLevels(name));
+        state.tile = [name];
+        babbageCtrl.setState(state);
+      }
+      var getLevels = function(hierarchies) {
+        var state = babbageCtrl.getState();
+        for(var name in hierarchies) {
+          var hierarchy = hierarchies[name];
+          var levels = hierarchy.levels;
+          var levelLength = levels.length;
+          var prevs = [name];
+          for(var i=0;i<levelLength;i++) {
+            prevs.push(levels[i]);
+            if(state.tile[0] == levels[i]) {
+              return prevs;
+            }
+          }
+        }
+        return [state.tile[0]];
+      };
+      var state = babbageCtrl.getState();
+      scope.levels = getLevels(state.hierarchies);
+    }
+  }
+}]);
+demo.directive('treemapBreadcrumpOld', ['$rootScope', function($rootScope) {
   return {
     restrict: 'EA',
     require: '^babbage',
     scope: {
-      state: '='
+      state: '=',
+      reset: '='
     },
+    template: '<div><ul ng-repeat="tile in tiles"><li>{{valueForTile(tile)}}</li></ul><a href="" ng-click="breadcrumpUp();">Ebene hoch</a></div>',
     link: function(scope, element, attrs, babbageCtrl) {
-      babbageCtrl.setState(scope.state);
-
-      scope.$watch('state', function(oldValue, newValue) {
+      var cleanCuts = function(cuts) {
+        var cutLength = cuts.length;
+        var newCuts = {};
+        for(var i=0;i<cutLength;i++) {
+          var cut = cuts[i];
+          var cutElements = cut.split(":");
+          newCuts[cutElements[0]] = cutElements[1];
+        }
+        return newCuts;
+      }
+      scope.tiles = [scope.state.tile[0]];
+      var breadcrump = [];
+      scope.cuts = cleanCuts(scope.state.cut);
+      scope.breadcrumpUp = function() {
+        if(scope.tiles.length > 1) {
+          var currentTile = scope.tiles.pop();
+          var currentCuts = scope.state.cut;
+          scope.state.tile = [scope.tiles[scope.tiles.length-1]];
+          var newCuts = [];
+          for(var j=0;j<currentCuts.length;j++) {
+            if(currentCuts[j].indexOf(scope.state.tile) == -1){
+              newCuts.push(currentCuts[j]);
+            }
+          }
+          scope.state.cut = newCuts;
+        }
+      }
+      scope.valueForTile = function(tile) {
+        return scope.cuts[tile] || tile;
+      }
+      var resetTiles = function() {
+        scope.tiles = [];
+      }
+      scope.$watch('reset', function(reset) {
+        if(reset) { resetTiles();scope.reset = false; }
+      });
+      scope.$watch('state', function(newValue, oldValue) {
         if(oldValue !== newValue) {
-          babbageCtrl.update();
+          var newTile = newValue.tile[0];
+          var newCuts = newValue.cut;
+          scope.cuts = cleanCuts(newCuts);
+          var tilesLength = scope.tiles.length;
+          var contains = false;
+          for(var i=0;i<=tilesLength;i++) {
+            if(newTile == scope.tiles[i]){
+              contains = true;
+            }
+          }
+          if(!contains) {
+            scope.tiles.push(newTile);
+          }
         };
       }, true);
+    }
+  }
+}]);
+demo.directive('treemapTable', ['$rootScope', '$http', function($rootScope, $http) {
+  return {
+    restrict: 'EA',
+    replace: true,
+    require: '^babbage',
+    scope: { },
+    template: '<table class="treemap-table table table-condensed"> <tr> <th>Titel</th> <th class="num">Betrag</th> <th class="num">Anteil</th> </tr> <tr ng-repeat="row in rows"> <td> <i style="color: {{row.color}};" class="fa fa-square"></i> {{row.name}} </td> <td class="num">{{row.value_fmt}}</td> <td class="num">{{row.percentage}}</td> </tr> <tr> <th> Total </th> <th class="num">{{summary.value_fmt}}</th> <th class="num">100%</th> </tr>',
+    link: function(scope, element, attrs, babbageCtrl) {
+      scope.rows = [];
+			scope.summary = {};
+
+      scope.queryLoaded = false;
+
+      var query = function(model, state) {
+        var tile = asArray(state.tile)[0],
+            area = asArray(state.area)[0],
+            area = area ? [area] : defaultArea(model);
+
+        var q = babbageCtrl.getQuery();
+        q.aggregates = area;
+        q.drilldown = [tile];
+
+        var order = [];
+        for (var i in q.order) {
+          var o = q.order[i];
+          if ([tile, area].indexOf(o.ref) != -1) {
+            order.push(o);
+          }
+        }
+        if (!order.length) {
+          order = [{ref: area, direction: 'desc'}];
+        }
+
+        q.order = order;
+        q.page = 0;
+        q.pagesize = 50;
+
+        scope.cutoffWarning = false;
+        scope.queryLoaded = true;
+        var dfd = $http.get(babbageCtrl.getApiUrl('aggregate'),
+                            babbageCtrl.queryParams(q));
+        dfd.then(function(res) {
+          queryResult(res.data, q, model, state);
+        });
+      }
+      var queryResult = function(data, q, model, state) {
+        var tileRef = asArray(state.tile)[0],
+            areaRef = asArray(state.area)[0],
+            areaRef = areaRef ? [areaRef] : defaultArea(model);
+
+        scope.rows = [];
+        for (var i in data.cells) {
+          var cell = data.cells[i];
+          cell.value_fmt = ngBabbageGlobals.numberFormat(Math.round(cell[areaRef]));
+          cell.name = cell[tileRef];
+          cell.color = ngBabbageGlobals.colorScale(i);
+					cell.percentage = parseFloat(cell[areaRef] / Math.max(data.summary[areaRef], 1)*100).toFixed(2);
+          scope.rows.push(cell);
+        };
+				scope.summary = { value_fmt: ngBabbageGlobals.numberFormat(Math.round(data.summary[areaRef]))};
+      }
+      var unsubscribe = babbageCtrl.subscribe(function(event, model, state) {
+        query(model, state);
+      });
+    scope.$on('$destroy', unsubscribe);
+      var defaultArea = function(model) {
+        for (var i in model.aggregates) {
+          var agg = model.aggregates[i];
+          if (agg.measure) {
+            return [agg.ref];
+          }
+        }
+        return [];
+      };
     }
   }
 }]);
