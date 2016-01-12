@@ -65812,6 +65812,30 @@ ngBabbage.directive('babbage', ['$http', '$rootScope', '$location', 'babbageApi'
         }
         return {params: q};
       }
+      self.getNextHierarchyLevel = function(currentValue) {
+        var currentState = self.getState();
+        if(currentState.hierarchies) {
+            hierarchy = currentState.hierarchies[currentState.tile[0]];
+          if(hierarchy) {
+            return hierarchy.levels[0];
+          }else {
+            for(var name in currentState.hierarchies) {
+               var hierarchy = currentState.hierarchies[name];
+               if(hierarchy && hierarchy.levels) {
+                 var levelLength = hierarchy.levels.length;
+                  for(var i=0;i<levelLength;i++) {
+                    if(currentState.tile[0] == hierarchy.levels[i]) {
+                      var nextLevel = i+1;
+                      if(nextLevel < levelLength) {
+                        return hierarchy.levels[nextLevel];
+                      }
+                    }
+                  }
+               }
+            }
+          }
+        }
+      }
     }]
   };
 }]);
@@ -66967,33 +66991,12 @@ ngBabbage.directive('babbageTreemap', ['$rootScope', '$http', '$document', funct
     };
 
     function setTile(d) {
-      var currentState = babbageCtrl.getState();
-      if(currentState.hierarchies) {
-        var cut = currentState.tile[0] + ':' + d[currentState.tile[0]],
-          hierarchy = currentState.hierarchies[currentState.tile[0]];
-        if(hierarchy) {
-          currentState.tile = [ hierarchy.levels[0] ];
-          currentState.cut = currentState.cut.concat([cut])
-          babbageCtrl.setState(currentState);
-        }else {
-          for(var name in currentState.hierarchies) {
-             var hierarchy = currentState.hierarchies[name];
-             if(hierarchy && hierarchy.levels) {
-               var levelLength = hierarchy.levels.length;
-                for(var i=0;i<levelLength;i++) {
-                  if(currentState.tile[0] == hierarchy.levels[i]) {
-                    var nextLevel = i+1;
-                    if(nextLevel < levelLength) {
-                      currentState.tile = [ hierarchy.levels[nextLevel] ];
-                      currentState.cut = currentState.cut.concat([cut])
-                      babbageCtrl.setState(currentState);
-                    }
-                  }
-                }
-             }
-          }
-        }
-      }
+      var currentState = babbageCtrl.getState(),
+        newLevel = babbageCtrl.getNextHierarchyLevel(),
+        cut = currentState.tile[0] + ':' + d[currentState.tile[0]];
+      currentState.tile = [ newLevel];
+      currentState.cut = currentState.cut.concat([cut]);
+      babbageCtrl.setState(currentState);
     };
 
     function positionNode() {
@@ -67115,27 +67118,27 @@ var demo = angular.module('demo', ['ngRoute', 'ngBabbage', 'angular.filter', 'ui
 
 demo.controller('DemoCtrl', function ($scope) {
   $scope.einahmeAusgabe = 'Einnahmen';
-  $scope.defaultCut = ['titelart:Einnahmetitel', 'jahr:2016'];
+	$scope.defaultCut = ['einnahmeausgabe.einnahmeausgabe:Einnahme'];
   $scope.state = {
     tile: ['hauptgruppe.hauptgruppenbezeichnung'],
     cut: $scope.defaultCut,
     hierarchies: {
-      'einzelplan.einzelplanbezeichnung': {
+      'einzelplanbezeichnung.einzelplanbezeichnung': {
         label: 'Einzelplan',
-        levels: ['kapitel.kapitelbezeichnung', 'titel.titelbezeichnung']
+        levels: ['kapitel.kapitelbezeichnung', 'zweckbestimmung.zweckbestimmung']
       },
       'hauptgruppe.hauptgruppenbezeichnung': {
         label: 'Hauptgruppe',
-        levels: [ 'obergruppe.obergruppenbezeichnung', 'gruppe.gruppenbezeichnung']
+        levels: [ 'obergruppe.obergruppenbezeichnung', 'gruppenbezeichnung.gruppenbezeichnung']
       },
-      'hauptfunktion.hauptfunktionsbezeichnung': {
+      'hauptfunktion.hauptfunktionbezeichnung': {
         label: 'Hauptfunktion',
-        levels: ['oberfunktion.oberfunktionsbezeichnung', 'funktion.funktionsbezeichnung']
+        levels: ['oberfunktion.oberfunktionbezeichnung', 'funktionbezeichnung.funktionbezeichnung']
       }
     }
   }
-  $scope.einahmenausgaben = [{label: 'Einnahmen', id: 'titelart:Einnahmetitel'},{label: 'Ausgaben', id: 'titelart:Ausgabetitel'}]
-  $scope.jahr = [{label: '2016', id: 'jahr:2016'},{label: '2017', id: 'jahr:2017'}]
+  $scope.einahmenausgaben = [{label: 'Einnahmen', id: 'einnahmeausgabe.einnahmeausgabe:Einnahme'},{label: 'Ausgaben', id: 'einnahmeausgabe.einnahmeausgabe:Ausgabe'}]
+
   $scope.setTile = function(tile) {
     $scope.reset = true;
     $scope.state.tile = [tile];
@@ -67373,12 +67376,21 @@ demo.directive('treemapTable', ['$rootScope', '$http', function($rootScope, $htt
     replace: true,
     require: '^babbage',
     scope: { },
-    template: '<table class="treemap-table table table-condensed"> <tr> <th>Titel</th> <th class="num">Betrag</th> <th class="num">Anteil</th> </tr> <tr ng-repeat="row in rows"> <td> <i style="color: {{row.color}};" class="fa fa-square"></i> {{row.name}} </td> <td class="num">{{row.value_fmt}}</td> <td class="num">{{row.percentage}}</td> </tr> <tr> <th> Total </th> <th class="num">{{summary.value_fmt}}</th> <th class="num">100%</th> </tr>',
+    template: '<table class="treemap-table table table-condensed"> <tr> <th>Titel</th> <th class="num">Betrag</th> <th class="num">Anteil</th> </tr> <tr ng-repeat="row in rows"> <td> <i style="color: {{row.color}};" class="fa fa-square"></i><a href ng-click="setTile(row);"> {{row.name}} </a></td> <td class="num">{{row.value_fmt}}</td> <td class="num">{{row.percentage}}</td> </tr> <tr> <th> Total </th> <th class="num">{{summary.value_fmt}}</th> <th class="num">100%</th> </tr>',
     link: function(scope, element, attrs, babbageCtrl) {
       scope.rows = [];
 			scope.summary = {};
 
       scope.queryLoaded = false;
+
+      scope.setTile = function(row) {
+        var currentState = babbageCtrl.getState(),
+          newLevel = babbageCtrl.getNextHierarchyLevel(),
+          cut = currentState.tile[0] + ':' + row.name;
+        currentState.tile = [ newLevel ];
+        currentState.cut = currentState.cut.concat([ cut ]);
+        babbageCtrl.setState(currentState);
+      };
 
       var query = function(model, state) {
         var tile = asArray(state.tile)[0],
